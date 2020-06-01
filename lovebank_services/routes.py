@@ -1,4 +1,5 @@
 from flask import jsonify, abort, request, make_response, url_for
+import six
 from lovebank_services import app    # import app from __init__.py
 from lovebank_services.models import User, Task
 
