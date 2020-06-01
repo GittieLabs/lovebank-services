@@ -10,4 +10,4 @@ install:
 script:
   - pytest
 notifications:
-  slack: lovebankworkspace:dqugOBeu3M3fJTfGD4CUZthP
+  slack: lovebankworkspace:jxHHnVQhjeNqMvZosCgFr19T
