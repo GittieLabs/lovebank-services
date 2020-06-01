@@ -1,4 +1,4 @@
-from lovebank_services import app, db    # import app from services/__init__.py
+from lovebank_services import app, db    # import app and db from services/__init__.py
 
 # Run app
 if __name__ == "__main__":
