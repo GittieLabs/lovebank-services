@@ -1,6 +1,6 @@
 
 # LoveBank Services
-[![Build Status](https://travis-ci.com/GittieLabs/lovebank-services.svg?branch=dev-yifei)](https://travis-ci.com/GittieLabs/lovebank-services)
+[![Build Status](https://travis-ci.com/GittieLabs/lovebank-services.svg?branch=master)](https://travis-ci.com/GittieLabs/lovebank-services)
 
 Services framework for the LoveBank App
 ## Running the Flask app
