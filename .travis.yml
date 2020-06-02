@@ -11,3 +11,10 @@ script:
   - pytest
 notifications:
   slack: lovebankworkspace:jxHHnVQhjeNqMvZosCgFr19T
+
+# deploy on Heroku if test passed
+deploy:
+  provider: heroku
+  api_key: HEROKU_API_SECRET
+  on:
+    all_branches: true
