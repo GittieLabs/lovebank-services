@@ -1,18 +1,19 @@
 language: python
+# only perform test on python-3.7
 python:
-  - "3.6"
   - "3.7"
-  - "3.8"
 # command to install dependencies
 install:
   - pip install -r requirements.txt
 # command to run tests
 script:
   - pytest
+# send notification to slack travis-ci channel
 notifications:
   slack: lovebankworkspace:jxHHnVQhjeNqMvZosCgFr19T
 
 # deploy on Heroku if test passed
+# no support for concurrent builds
 deploy:
   provider: heroku
   api_key: $HEROKU_API_SECRET
