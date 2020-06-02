@@ -22,7 +22,7 @@ tasks = [
 
 @app.route("/", methods=['GET'])
 def hello():
-    return "Hello, World!"
+    return "You have reached the microservice module of LoveBank!"
 
 
 def make_public_task(task):
