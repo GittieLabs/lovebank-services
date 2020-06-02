@@ -39,3 +39,8 @@ To test the SQLite database created locally, run the test_db.py file.
 $ python test_db.py
 ```
 This test creates two user objects using the User model defined in ***lovebank_services/models.py***. It adds the user objects to the database, then makes queries to check if they were added. Once the test is done, the objects will not exist in the database because this test does not commit them to the database.
+
+## Testing and Integration Pipeline
+Upon publishing new commits and merging branches, Travis CI will be triggered to perform tests and then build the new application. If all the tests passed, the updated application will be deployed automatically as well. 
+
+As of now, LoveBank service is deployed at Heroku: https://lovebank.herokuapp.com
