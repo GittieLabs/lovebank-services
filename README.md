@@ -1,4 +1,8 @@
+
 # LoveBank Services
+=======
+[![Build Status](https://travis-ci.com/GittieLabs/lovebank-services.svg?branch=dev-yifei)](https://travis-ci.com/GittieLabs/lovebank-services)
+
 Services framework for the LoveBank App
 ## Running the Flask app
 To avoid dependency conflicts, it is best to use a virtual environment to run the app.
