@@ -97,9 +97,3 @@ def insert_new_secret_pair(secret_name, secret_key, secret_value):
     new_secret_str = json.dumps(secrets_dict)
     response = client.update_secret(SecretId=secret_name,  SecretString=new_secret_str)
     return
-
-
-if __name__ == "__main__":
-    print(get_secret("lovebank-secret"))
-    print(list_all_secret_names())
-    insert_new_secret_pair("lovebank-secret", "TEST1", "test1")
