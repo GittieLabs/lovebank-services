@@ -7,6 +7,7 @@ class User(db.Model):
     partner_id = db.Column(db.Integer)
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
+    balance = db.Column(db.Integer)
     tasks_created = db.relationship('Task', backref='creator', lazy=True, foreign_keys='Task.creator_id')
     tasks_received = db.relationship('Task', backref='receiver', lazy=True, foreign_keys='Task.receiver_id')
 
@@ -17,6 +18,7 @@ class User(db.Model):
             "partner_id":   self.partner_id,
             "username"  :   self.username,
             "email"     :   self.email,
+            "balance"   :   self.balance,
             "tasks_received": list(task.serialize() for task in self.tasks_received)
         }
 
