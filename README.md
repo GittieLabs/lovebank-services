@@ -28,7 +28,7 @@ $ pip install -r requirements.txt
 ```
 $ python run.py
 ```
-- "Hello, World!" should load on port 5000 (http://localhost:5000/)
+- "You have reached the microservice module of LoveBank!" should load on port 5000 (http://localhost:5000/)
 - If message loads successfully, then the flask app is running and a database has been initialized locally
 - Use CTRL-C to stop running app
 ##### Note: If you get an error or to reset the database (delete the db file and re-initialize), run the reset_db.py file
