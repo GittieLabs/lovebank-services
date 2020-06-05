@@ -3,11 +3,11 @@
 
 
 API secrets, database master passwords and other sensitive data should not be explicitly stored within the code itself for security purposes. To
-get the secrets, please utilize Key Management Services by AWS. 
+get the secrets, please utilize Secret Manager by AWS. 
 
-All secret value and secret key pair should be stored under one secret with name "lovebank-secret". AWS allows one to store multiple
+All secret value and secret key pair should be stored under one secret with name "lovebank-secret". AWS Secret Manager allows one to store multiple
 secret key/value pairs under one secret name (You may consider "lovebank-secret" as a collection of secrets.)
-## Retrieving Secrets from KMS
+## Retrieving Secrets from Secret Manager
 
 ### 1. Setting up credentials:
 First, you would need to set up the credentials to connect to AWS from your local machine. This step is made easy thanks to 
