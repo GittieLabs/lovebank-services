@@ -16,18 +16,24 @@ the script provided. Within this dir (~/lovebank-services/key_management_service
 AWS_ACCESS_ID="ACCESS_ID_HIDDEN"
 AWS_ACCESS_KEY="ACCESS_KEY_HIDDEN"
 ```
-This sets the environment variable upon running get_secrets and will allow the program to establish an authenticated connection with AWS.
+This sets the environment variable upon running and will allow the program to establish an authenticated connection with AWS.
 
 ### 2. Get secrets:
-Return a python dict of secret key and value pairs stored in "lovebank-secret".
+Return a python dict of secret key and value pairs stored in "lovebank-secret". Then 
 ```
 secret_name = "lovebank-secret"
 response = get_secret(secret_name)
 
 secret_dict = json.loads(response)
 ```
+If one would like to view value for a specific secret key named "PWD" for instance, then:
+```
+this_password = secret_dict["PWD"]
+print (this_password)
+```
 
-### 3. Insert or Update secret key/value pair:
+### 3. Insert secret key/value pair:
+If you would like to insert a new key/value pair, you would need to specify the secret name first then provide secret key and its value.
 ```
 secret_name = "lovebank-secret"
 secret_key = "TEST1"
