@@ -12,6 +12,8 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False # avoid SQLAlchemy warning 
 
 # Create a database instance - Note: test.db will by ignored by .gitignore. Update file if necessary
 db = SQLAlchemy(app)
+from lovebank_services.models import Task, User
+
 db.create_all()
 from lovebank_services import routes # to avoid circular import issues, leave this import below initializatoin of db
 
