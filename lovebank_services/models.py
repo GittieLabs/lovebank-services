@@ -1,5 +1,5 @@
 from lovebank_services import db     # imports db variable from __init__.py
-from datetime import datetime
+from datetime import datetime, timedelta
 
 # User Model
 class User(db.Model):
@@ -29,13 +29,15 @@ class User(db.Model):
 # Task Model
 class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    creationTime = db.Column(db.DateTime, default=datetime.utcnow)
+    creationTime = db.Column(db.DateTime, default=datetime.utcnow())
     creator_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     receiver_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     title = db.Column(db.String(50), nullable=False)
     description = db.Column(db.String(120), nullable=False)
     cost = db.Column(db.Integer, nullable=False)
-    deadline = db.Column(db.DateTime)
+    accepted = db.Column(db.Boolean, default=False)
+    deadline = db.Column(db.DateTime, default=datetime.utcnow() + timedelta(days=1))
+    compTime = db.Column(db.DateTime, default=None)
     done = db.Column(db.Boolean, default=False)
 
     def serialize(self):
@@ -48,6 +50,9 @@ class Task(db.Model):
             "title"       :   self.title,
             "description" :   self.description,
             "cost"        :   self.cost,
+            "accepted"    :   self.accepted,
+            "deadline"    :   self.deadline,
+            "compTime"    :   self.compTime,
             "done"        :   self.done
         }
 
