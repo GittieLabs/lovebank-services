@@ -46,10 +46,11 @@ def populate_task_table(rows):
     """
 
     max_creator_id = db.session.query(func.max(User.id)).scalar()
+    max_partner_id = db.session.query(func.max(User.partner_id)).scalar()
 
     # If no users exist yet, an error message will be returned
-    if not max_creator_id:
-        print("Error: No users have been created yet, please pre-populate the User table first.")
+    if not max_creator_id or not max_partner_id:
+        print("Error: No users have been created yet or users have not been linked.")
         quit()
 
     f = Faker()
