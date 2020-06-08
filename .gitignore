@@ -133,3 +133,4 @@ Firebase-key.json
 
 # sqlite database
 Test.db
+lovebank_services/.env

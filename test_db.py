@@ -7,13 +7,16 @@ from lovebank_services.models import User
 class TestDB(unittest.TestCase):
     # Test User Model
     def test_User(self):
-        db.create_all()
+
+        print(User.query.all())
+        User.query.delete()
         # Create 2 user records
         user_1 = User(username='Ann', email='ann@test.com')
         user_2 = User(username='Bob', email='bob@test.com')
         # Add to DB
         db.session.add(user_1)
         db.session.add(user_2)
+        db.session.commit()
         # Query by username
         test_user_1 = User.query.filter_by(username='Ann').first()
         test_user_2 = User.query.filter_by(username='Bob').first()
