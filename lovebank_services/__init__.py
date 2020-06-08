@@ -16,6 +16,14 @@ from lovebank_services.models import Task, User
 
 db.create_all()
 from lovebank_services import routes # to avoid circular import issues, leave this import below initializatoin of db
+from lovebank_services.fake_data import *
+
+# Pre-populate database with fake data and clear tables
+clear_table(Task)
+clear_table(User)
+populate_user_table(10, True)  # If you intend to creat linked users, provide an even row number.
+populate_task_table(10)
+
 
 ''' To connect to Firebase project - uncomment below and point to service key path '''
 # cred = credentials.Certificate("firebase-key.json") # path to downloaded firebase service key
