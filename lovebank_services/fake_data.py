@@ -50,7 +50,7 @@ def populate_task_table(rows):
 
     # If no users exist yet, an error message will be returned
     if not max_creator_id or not max_partner_id:
-        print("Error: No users have been created yet or users have not been linked.")
+        print('Error: Fill task table failed. \nNo users have been created yet or users have not been linked.')
         quit()
 
     f = Faker()
