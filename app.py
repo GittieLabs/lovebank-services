@@ -1,10 +1,5 @@
-from flask import Flask
+from lovebank_services import app, db    # import app and db from services/__init__.py
 
-app = Flask(__name__)
-
-@app.route("/", methods=['GET'])
-def hello():
-    return "Hello, World!"
-
+# Run app
 if __name__ == "__main__":
     app.run(debug=True, port=5000) # Turn on debug mode and run on port 5000

@@ -46,6 +46,7 @@ To test the SQLite database created locally, run the test_db.py file.
 ```
 $ python test_db.py
 ```
+
 This test creates 2 user and 2 task objects using the User and Task models defined in ***lovebank_services/models.py***. It adds the objects to the database, then makes queries to check if they were added. Once the test is done, the objects will not exist in the database because this test does not commit them to the database.
 <br/>
 ### Using API Endpoints:
