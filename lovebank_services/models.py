@@ -59,3 +59,4 @@ class Task(db.Model):
 
     def __repr__(self):
         return 'Task(id: %d, title: %s, description: %s, cost: %d)' % (self.id, self.title, self.description, self.cost)
+

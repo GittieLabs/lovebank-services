@@ -1,98 +1,64 @@
 from flask import jsonify, abort, request, make_response, url_for
-import six
-from lovebank_services import app    # import app from __init__.py
+from lovebank_services import app, db
 from lovebank_services.models import User, Task
+from datetime import datetime
+import os
 
-tasks = [
-    {
-        'id': 1,
-        'title': 'Do the dishes',
-        'description': 'rinse and dry all the dishes in the kitchen sink',
-        'cost': 15,
-        'done': False
-    },
-    {
-        'id': 2,
-        'title': 'Do the laundry',
-        'description': 'Wash and dry all the dirty clothes',
-        'cost': 10,
-        'done': False
-    }
-]
-
+# TASK ROUTES
 @app.route("/", methods=['GET'])
 def hello():
     return "You have reached the microservice module of LoveBank!"
 
 
-def make_public_task(task):
-    new_task = {}
-    for field in task:
-        if field == 'id':
-            new_task['uri'] = url_for('get_task', task_id=task['id'],
-                                      _external=True)
-        else:
-            new_task[field] = task[field]
-    return new_task
-
-
 @app.route('/tasks', methods=['GET'])
 def get_tasks():
-    return jsonify({'tasks': [make_public_task(task) for task in tasks]})
+    return {'Tasks' : list(task.serialize() for task in Task.query.all())}
 
 
 @app.route('/tasks/<int:task_id>', methods=['GET'])
 def get_task(task_id):
-    task = [task for task in tasks if task['id'] == task_id]
-    if len(task) == 0:
-        abort(404)
-    return jsonify({'task': make_public_task(task[0])})
+    task = Task.query.filter_by(id=task_id).first()
+    if task:
+        return jsonify(task.serialize())
+    abort(404)
 
 
 @app.route('/tasks', methods=['POST'])
 def create_task():
-    if not request.json or 'title' not in request.json:
+    if not request.json:
         abort(400)
-    task = {
-        'id': tasks[-1]['id'] + 1 if len(tasks) > 0 else 1,
-        'title': request.json['title'],
-        'description': request.json.get('description', ""),
-        'cost': request.json['cost'],
-        'done': False
-    }
-    tasks.append(task)
-    return jsonify({'task': make_public_task(task)}), 201
+    task = Task(creator_id=request.json['creator_id'], receiver_id=request.json['receiver_id'], title=request.json['title'],
+                description=request.json['description'], cost=request.json['cost'], done=False)
+    db.session.add(task)
+    db.session.commit()
+    return jsonify(task.serialize())
 
 
 @app.route('/tasks/<int:task_id>', methods=['PUT'])
 def update_task(task_id):
-    task = [task for task in tasks if task['id'] == task_id]
-    if len(task) == 0:
-        abort(404)
-    if not request.json:
-        abort(400)
-    if 'title' in request.json and \
-            not isinstance(request.json['title'], six.string_types):
-        abort(400)
-    if 'description' in request.json and \
-            not isinstance(request.json['description'], six.string_types):
-        abort(400)
-    if 'cost' in request.json and not isinstance(request.json['cost'], int):
-        abort(400)
-    if 'done' in request.json and type(request.json['done']) is not bool:
-        abort(400)
-    task[0]['title'] = request.json.get('title', task[0]['title'])
-    task[0]['description'] = request.json.get('description',
-                                              task[0]['description'])
-    task[0]['cost'] = request.json.get('cost', task[0]['cost'])
-    task[0]['done'] = request.json.get('done', task[0]['done'])
-    return jsonify({'task': make_public_task(task[0])})
+    task = Task.query.filter_by(id=task_id).first()
+    if task:
+        if 'description' in request.json:
+            task.description = request.json['description']
+        if 'receiver_id' in request.json:
+            task.receiver_id = request.json['receiver_id']
+        if 'creator_id' in request.json:
+            task.creator_id = request.json['creator_id']
+        if 'title' in request.json:
+            task.title = request.json['title']
+        if 'cost' in request.json:
+            task.cost = request.json['cost']
+
+        db.session.commit()
+        return jsonify(Task.query.filter_by(id=task_id).first().serialize())
+    abort(404)
 
 
 @app.route('/tasks/<int:task_id>', methods=['DELETE'])
 def delete_task(task_id):
-    task = [task for task in tasks if task['id'] == task_id]
-    if len(task) == 0:
-        abort(404)
-    tasks.remove(task[0])
-    return jsonify({'result': True})
+    task = Task.query.filter_by(id=task_id).first()
+    if task:
+        db.session.delete(task)
+        db.session.commit()
+        return jsonify({'result': True})
+    abort(404)
