@@ -2,7 +2,12 @@ import pytest
 from lovebank_services import create_app, db
 from lovebank_services.models import User
 
-''' pytest fixtures to be called in test files '''
+''' pytest fixtures to be used by pytest files '''
+
+@pytest.fixture(scope='module')
+def new_user():
+    user = User(username='Ann', email='ann@test.com')
+    return user
 
 @pytest.fixutre(scope='module')
 def test_client():
