@@ -1,6 +1,6 @@
 from flask import jsonify, abort, request, make_response, url_for
 from lovebank_services import app, db
-from lovebank_servicespytest.models import User, Task
+from lovebank_services.models import User, Task
 from datetime import datetime
 import os
 
