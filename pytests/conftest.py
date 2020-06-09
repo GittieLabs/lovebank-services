@@ -1,5 +1,5 @@
 import pytest
-from lovebank_services import crearte_app, db
+from lovebank_services import create_app, db
 from lovebank_services.models import User
 
 ''' pytest fixtures to be called in test files '''
