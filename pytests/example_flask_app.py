@@ -1,5 +1,7 @@
 from flask import Flask, request, jsonify
 
+''' simple flask API example for example_pytest_test to use '''
+
 app = Flask(__name__)
 
 @app.route('/', methods=['GET'])
