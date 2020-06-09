@@ -2,16 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b33a5ec1-4f85-4746-96d1-e8f19cce7303" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/config.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/key_test.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lovebank_services/.env" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lovebank_services/README.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/manage.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lovebank_services/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/lovebank_services/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/config.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lovebank_services/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/lovebank_services/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test_db.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_db.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -207,7 +200,7 @@
       <updated>1590787532602</updated>
       <workItem from="1590787539193" duration="557000" />
       <workItem from="1590887758381" duration="2395000" />
-      <workItem from="1591391772141" duration="15699000" />
+      <workItem from="1591391772141" duration="18779000" />
     </task>
     <servers />
   </component>
