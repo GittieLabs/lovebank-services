@@ -19,7 +19,8 @@ class User(db.Model):
             "username"  :   self.username,
             "email"     :   self.email,
             "balance"   :   self.balance,
-            "tasks_received": list(task.serialize() for task in self.tasks_received)
+            "tasks_received": list(task.serialize() for task in self.tasks_received),
+            "tasks_created" : list(task.serialize() for task in self.tasks_created)
         }
 
     def __repr__(self):
@@ -31,7 +32,7 @@ class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     creationTime = db.Column(db.DateTime, default=datetime.utcnow())
     creator_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    receiver_id = db.Column(db.Integer, db.ForeignKey('user.partner_id'), nullable=False)
+    receiver_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     title = db.Column(db.String(50), nullable=False)
     description = db.Column(db.String(120), nullable=False)
     cost = db.Column(db.Integer, nullable=False)

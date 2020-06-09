@@ -39,7 +39,7 @@ def update_task(task_id):
     task = Task.query.filter_by(id=task_id).first()
     if task:
         if 'description' in request.json:
-            task.desctiption = request.json['desctiption']
+            task.description = request.json['description']
         if 'receiver_id' in request.json:
             task.receiver_id = request.json['receiver_id']
         if 'creator_id' in request.json:
@@ -62,12 +62,3 @@ def delete_task(task_id):
         db.session.commit()
         return jsonify({'result': True})
     abort(404)
-
-
-# DEV ROUTES
-@app.route('/developer/resetdb', methods=['GET'])
-def reset_db():
-    db.create_all()
-    os.remove("lovebank_services/test.db")
-    db.create_all()
-    return "reset successful"
