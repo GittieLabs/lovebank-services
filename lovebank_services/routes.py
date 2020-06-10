@@ -1,8 +1,10 @@
 from flask import jsonify, abort, request, make_response, url_for
 from lovebank_services import app, db
-from lovebank_services.models import User, Task
+from lovebank_services.models import Person, Task
+from lovebank_services.fake_data import *
 from datetime import datetime
 import os
+
 
 # TASK ROUTES
 @app.route("/", methods=['GET'])
@@ -62,3 +64,35 @@ def delete_task(task_id):
         db.session.commit()
         return jsonify({'result': True})
     abort(404)
+
+
+# DEV ROUTES
+@app.route('/persons', methods=['GET'])
+def get_person():
+    if Person.query.all():
+        return {'Persons' : list(person.serialize() for person in Person.query.all())}
+    return {'Persons': []}
+
+
+@app.route('/populatePerson/<int:rows>', methods=['GET'])
+def populate_person(rows):
+    populate_person_table(rows, True)
+    return {'result' : 'True'}
+
+
+@app.route('/populateTask/<int:rows>', methods=['GET'])
+def populate_task(rows):
+    populate_task_table(rows)
+    return {'result' : 'True'}
+
+
+@app.route('/clearPerson', methods=['GET'])
+def clear_person():
+    clear_table(Person)
+    return {'result' : 'true'}
+
+
+@app.route('/clearTask', methods=['GET'])
+def clearTask():
+    clear_table(Task)
+    return {'result' : 'true'}
