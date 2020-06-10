@@ -9,7 +9,7 @@ def new_user():
     user = User(username='Ann', email='ann@test.com')
     return user
 
-@pytest.fixutre(scope='module')
+@pytest.fixture(scope='module')
 def test_client():
     flask_app = create_app('flask_test.cfg')
 
