@@ -1,4 +1,5 @@
 import pytest
+
 from lovebank_services import create_app, db
 from lovebank_services.models import User
 
@@ -21,7 +22,8 @@ def test_client():
     ctx = flask_app.app_context()
     ctx.push()
 
-    yield testing_client  # this is where the testing happens!
+    # This is where testing happens
+    yield testing_client  # yield statement provides fixture values and executes teardown code
 
     ctx.pop()
 
@@ -40,7 +42,8 @@ def init_database():
     # Commit the changes for the users
     db.session.commit()
 
-    yield db  # this is where the testing happens!
+    # This is where testing happens
+    yield db  # yield statement provides fixture values and executes teardown code
 
     db.drop_all()
 
