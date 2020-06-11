@@ -2,16 +2,7 @@ import os
 import random
 from faker import Faker
 from dotenv import load_dotenv
-from lovebank_services import db, User, Task
-from sqlalchemy import func, create_engine
-
-"""
-Create engine - This will be used to execute commands when using a Postgres database
-"""
-load_dotenv()
-db_string = os.environ['SQLALCHEMY_DATABASE_URI_TEST'] # set to db uri (from .env) which you are currently using
-engine = create_engine(db_string)
-
+from lovebank_services import db, engine, User, Task
 
 def populate_user_table(rows, linked):
     """
@@ -87,11 +78,11 @@ def clear_table(model):
     # if model not in (User, Task):
     #     print('Error: please enter either User or Task for clear_table().')
     #     quit()
-    #
     # db.session.query(model).delete()
+    # db.session.commit()
+
     if model == Task:
         engine.execute("DROP TABLE task;")
     if model == User:
         engine.execute('DROP TABLE "user" CASCADE;')
     db.create_all()
-    # db.session.commit()
