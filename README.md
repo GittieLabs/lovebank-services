@@ -6,7 +6,7 @@
 Services framework for the LoveBank App
 
 ## Getting Started
-Before running the app, there are a few steps that need to be taken. <br/> <br/>
+Before running the app, there are a few steps that need to be taken. <br/>
 #### **1.** Create 3 local PostgreSQL databases. You can name them ***lovebank_test***, ***lovebank_dev***, and ***lovebank*** <br/><br/>
 #### **2.** Within the ***lovebank_services*** folder, add a **.env** file and include the following (some information is omitted):<br/>
 ````
@@ -36,6 +36,8 @@ AWS_ACCESS_ID={ACCESS_KEY_HIDDEN}
 AWS_ACCESS_KEY={ACCESS_KEY_HIDDEN}
 ```
 Please refer to keybase for access keys
+
+ <br/><br/>
 
 ## Running the Flask app
 To avoid dependency conflicts, it is best to use a virtual environment to run the app.
