@@ -61,9 +61,9 @@ Detailed instructions: https://www.youtube.com/watch?v=APOPm01BVrk
 $ pip install -r requirements.txt
 ```
 
-### 3. Run the run.py file
+### 3. Run the app.py file
 ```
-$ python run.py
+$ python app.py
 ```
 - "You have reached the microservice module of LoveBank!" should load on port 5000 (http://localhost:5000/)
 - If message loads successfully, then the flask app is running and a database has been initialized locally
