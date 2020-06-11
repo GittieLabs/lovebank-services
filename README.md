@@ -4,6 +4,39 @@
 [![Build Status](https://travis-ci.com/GittieLabs/lovebank-services.svg?branch=master)](https://travis-ci.com/GittieLabs/lovebank-services)
 
 Services framework for the LoveBank App
+
+## Getting Started
+Before running the app, there are a few steps that need to be taken. <br/> <br/>
+#### **1.** Create 3 local PostgreSQL databases. You can name them ***lovebank_test***, ***lovebank_dev***, and ***lovebank*** <br/><br/>
+#### **2.** Within the ***lovebank_services*** folder, add a **.env** file and include the following (some information is omitted):<br/>
+````
+APP_SETTINGS="config.TestingRemoteConfig"
+
+SQLALCHEMY_DATABASE_URI_TEST="postgresql://localhost/lovebank_test"
+SQLALCHEMY_DATABASE_URI_DEV="postgresql://localhost/lovebank_dev"
+SQLALCHEMY_DATABASE_URI="postgresql://localhost/lovebank"
+
+SQLALCHEMY_REMOTE_URI_TEST="postgresql://{username}:{password}@000.000.00.000/lovebank_test"
+SQLALCHEMY_REMOTE_URI_DEV="postgresql{username}:{password}@000.000.00.000/lovebank_dev"
+SQLALCHEMY_REMOTE_URI="postgresql://{username}:{password}@000.000.00.000/lovebank"
+````
+- Point the top 3 URIs to the 3 local PostgreSQL databases you created  <br/>
+- Point the bottom 3 URIs to the remote PostgreSQL databases (please see Keybase for complete URIs) <br/> 
+- **APP_SETTINGS** will determine which database the flask app connects to when run. Refer to the following guide when deciding its value:
+    - "config.TestingConfig" will connect to the database referenced by SQLALCHEMY_DATABASE_URI_TEST <br/>
+    - "config.DevelopmentConfig" will connect to database referenced by SQLALCHEMY_DATABASE_URI_DEV  <br/>
+    - "config.ProductionConfig" will connect to the database referenced by SQLALCHEMY_DATABASE_URI   <br/>
+    - "config.TestingRemoteConfig" will connect to the database referenced by SQLALCHEMY_REMOTE_URI_TEST <br/>
+    - "config.DevelopmentRemoteConfig" will connect to database referenced by SQLALCHEMY_REMOTE_URI_DEV  <br/>
+    - "config.ProductionRemoteConfig" will connect to the database referenced by SQLALCHEMY_REMOTE_URI   <br/>
+
+#### **3.** Within the ***key_management_service*** folder, add another **.env** file and include the following (some information is omitted):<br/>
+```
+AWS_ACCESS_ID={ACCESS_KEY_HIDDEN}
+AWS_ACCESS_KEY={ACCESS_KEY_HIDDEN}
+```
+Please refer to keybase for access keys
+
 ## Running the Flask app
 To avoid dependency conflicts, it is best to use a virtual environment to run the app.
 ### 1. Create and run virtual environment:
