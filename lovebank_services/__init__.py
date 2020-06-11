@@ -26,24 +26,7 @@ db.create_all()
 
 
 """ Create Engine - This will be used to execute SQL commands """
-db_string = ""
-if os.environ['APP_SETTINGS'] == "config.TestingConfig":
-    db_string = os.environ['SQLALCHEMY_DATABASE_URI_TEST']
-
-elif os.environ['APP_SETTINGS'] == "config.DevelopmentConfig":
-    db_string = os.environ['SQLALCHEMY_DATABASE_URI_DEV']
-
-elif os.environ['APP_SETTINGS'] == "config.ProductionConfig":
-    db_string = os.environ['SQLALCHEMY_DATABASE_URI']
-
-elif os.environ['APP_SETTINGS'] == "config.TestingRemoteConfig":
-    db_string = os.environ['SQLALCHEMY_REMOTE_URI_TEST']
-
-elif os.environ['APP_SETTINGS'] == "config.DevelopmentRemoteConfig":
-    db_string = os.environ['SQLALCHEMY_REMOTE_URI_DEV']
-
-elif os.environ['APP_SETTINGS'] == "config.ProductionRemoteConfig":
-    db_string = os.environ['SQLALCHEMY_REMOTE_URI']
+db_string = app.config['SQLALCHEMY_DATABASE_URI']
 engine = create_engine(db_string)
 
 
