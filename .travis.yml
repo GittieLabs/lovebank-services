@@ -1,22 +1,39 @@
 language: python
+
 # only perform test on python-3.7
 python:
   - "3.7"
+
 # command to install dependencies
 install:
   - pip install -r requirements.txt
-# command to run tests
+
+# command to run tests on postgres local on travis VM
+services:
+  - postgresql
+before_script:
+  - psql -c 'create database travis_ci_test;' -U postgres
+  - python manage.py db upgrade
 script:
   - pytest
+
 # send notification to slack travis-ci channel
 notifications:
   slack: lovebankworkspace:jxHHnVQhjeNqMvZosCgFr19T
 
-# deploy on Heroku if test passed
+# On MASTER branch only! Deploy on Heroku if test passed
+# Remote PostgreSQL schema auto update
 # no support for concurrent builds
 deploy:
   provider: heroku
   api_key: $HEROKU_API_SECRET
   app: lovebank
-  on:
-    all_branches: true
+  on: master
+  run:
+    - sleep 10
+    - "export APP_SETTINGS='config.ProductionRemoteConfig'"
+    - "python manage.py db upgrade"
+    - "export APP_SETTINGS='config.DevelopmentRemoteConfig'"
+    - "python manage.py db upgrade"
+    - "export APP_SETTINGS='config.TestingRemoteConfig'"
+    - "python manage.py db upgrade"
