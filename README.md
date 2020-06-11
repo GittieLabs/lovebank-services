@@ -94,6 +94,8 @@ This test creates 2 user and 2 task objects using the User and Task models defin
   - [tasks/{task_id}](#put-taskstask_id)
 - ### DELETE
   - [tasks/{task_id}](#delete-taskstask_id)
+- ### [Populating Tables](#populating-user-table)
+- ### [Clearing Tables](#clearing-user-table)
 
 <br/><br/> 
 
@@ -169,6 +171,29 @@ Replace {task_id} with the ID of the task you want to delete. If the delete was 
   "result": true
 }
 ```
+### Populating User Table
+#### `GET /populateUser/{int:rows}`
+To populate the User table, simply run a GET request to the above endpoint and replace *{int:rows}* with the amount of rows you wish to add to the User table.
+
+<br/><br/>
+
+### Populating Task Table
+#### `GET /populateTask/{int:rows}`
+To populate the Task table, simply run a GET request to the above endpoint and replace *{int:rows}* with the amount of rows you wish to add to the Task table.
+
+<br/><br/>
+
+### Clearing User Table
+#### `GET /clearUser`
+To clear the User table, run a GET request to the endpoint above.
+
+<br/><br/>
+
+### Clearing Task Table
+#### `GET /clearTask`
+To clear the Task table, run a GET request to the endpoint above.
+
+<br/><br/>
 
 ## Testing and Integration Pipeline
 Upon publishing new commits and merging branches, Travis CI will be triggered to perform tests and then build the new application. If all the tests passed, the updated application will be deployed automatically as well. 
