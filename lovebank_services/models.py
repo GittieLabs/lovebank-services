@@ -1,8 +1,10 @@
 from lovebank_services import db     # imports db variable from __init__.py
 from datetime import datetime, timedelta
 
-# Person Model
-class Person(db.Model):
+# User Model
+class User(db.Model):
+    __tablename__ = "user"
+
     id = db.Column(db.Integer, unique=True ,primary_key=True)
     partner_id = db.Column(db.Integer, unique=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
@@ -24,15 +26,18 @@ class Person(db.Model):
         }
 
     def __repr__(self):
-        return f"Person('username: {self.username}', email: '{self.email}')"
+        return f"User('username: {self.username}', email: '{self.email}')"
+
 
 
 # Task Model
 class Task(db.Model):
+    __tablename__ = "task"
+
     id = db.Column(db.Integer, primary_key=True)
     creationTime = db.Column(db.DateTime, default=datetime.utcnow())
-    creator_id = db.Column(db.Integer, db.ForeignKey('person.id'), nullable=False)
-    receiver_id = db.Column(db.Integer, db.ForeignKey('person.id'), nullable=False)
+    creator_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    receiver_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     title = db.Column(db.String(50), nullable=False)
     description = db.Column(db.String(120), nullable=False)
     cost = db.Column(db.Integer, nullable=False)
