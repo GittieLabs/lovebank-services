@@ -5,8 +5,10 @@ from sqlalchemy import create_engine
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from firebase_admin import credentials
+from key_management_service.get_secrets import *
 import firebase_admin
 from key_management_service.get_secrets import *
+
 
 
 
@@ -25,6 +27,8 @@ print(os.environ['APP_SETTINGS'])
 """ Create a Database Instance """
 db = SQLAlchemy(app)
 from lovebank_services.models import Task, User
+# db.create_all() # Please create tables using migrations by running manage.py
+
 
 
 """ Create Engine - This will be used to execute SQL commands """
@@ -46,3 +50,4 @@ try:
     print("Firebase Connection Successful")
 except:
     print("Error: Firebase Connection Unsuccessful")
+
