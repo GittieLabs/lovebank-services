@@ -1,4 +1,7 @@
-""" pytest for flask API  """
+""" pytest for flask API  
+
+    see conftest.py file for fixture config
+"""
 
 def test_home_page(test_client):
     """
