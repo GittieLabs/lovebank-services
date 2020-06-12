@@ -80,7 +80,21 @@ $ python test_db.py
 ```
 
 This test creates 2 user and 2 task objects using the User and Task models defined in ***lovebank_services/models.py***. It adds the objects to the database, then makes queries to check if they were added. Once the test is done, the objects will not exist in the database because this test does not commit them to the database.
+
+### Using pytest:
+To test the Flask API routes, run the test_routes.py file.
+```
+$ python3 -m pytest -k test_routes.py
+```
+***test_routes.py*** tests the API routes and requests defined in ***lovebank_services/__init__.py***. Note that the the test_client which calls a test version of the Flask app gets set in ***conftest.py*** (pytest's preferred default name for the config file). 
+
+pytest can also run all tests it automatically detects with this command.
+```
+$ python3 -m pytest
+```
+
 <br/>
+
 ### Using API Endpoints:
 - ### GET
   - [tasks/](#get-tasks)

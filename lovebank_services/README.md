@@ -1,8 +1,11 @@
 
 # LoveBank Database Management
+All proposed change in schema should be fully tested on local database. Avoid making migrations to remote database as manual updates on remote DB may break CI pipeline 
+by causing conflicts or inconsistency when Travis CI auto updates new data model and deploys new Flask app from master branch later on.
+
 
 To ensure consistency of data stored, please refrain from directly editing schema within database an utilize migration functionality based on Alembic.
-## Local migration
+## Local Database Management
 
 ### 1. Create database:
 Three databases shall be created for this project - production, testing and development. To create a database in PostgreSQL,
@@ -17,7 +20,7 @@ CREATE DATABASE
 as a response of successful creation. Repeat the same step twice for production (lovebank) and development databases (lovebank_dev).
 
 ### 2. DB init (Local) - Required when first set up:
-Within the root folder of this project, you shall see a folder named "migrations". if not, then you would need to init database by:
+Within the root folder of this project, you shall see a folder named "migrations". If you do, please jump to step 3 directly. If not, then you would need to init database by:
 ```
 python manage.py db init
 ```
@@ -61,4 +64,13 @@ python manage.py db upgrade
 
 ### 3. DB schema rollback (Local)
 
-To be written...
+```
+python manage.py db downgrade
+```
+
+## Remote Database Management
+You should try to avoid making migrations on remote database. Remote database schema is changed automatically upon updates passing tests on master branch.
+But you are more than welcomed to use remote DB for testing purposes. Remember to use the testing database by setting APP_SETTINGS:
+```
+ export APP_SETTINGS="config.TestingRemoteConfig"
+```
