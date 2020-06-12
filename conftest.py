@@ -1,31 +1,32 @@
 import pytest
 
-from lovebank_services import create_app, db
+from lovebank_services import app, db
 from lovebank_services.models import User
 
-''' pytest fixtures to be used by pytest files '''
-
-@pytest.fixture(scope='module')
-def new_user():
-    user = User(username='Ann', email='ann@test.com')
-    return user
+""" config of pytest fixtures to be used by pytest files  """
 
 @pytest.fixture(scope='module')
 def test_client():
-    flask_app = create_app('flask_test.cfg')
+    """ sets up a testable instance of flask app """
+    flask_app = app
+
+    # disable error catching during request handling, so that you get better error reports
+    flask_app.config['TESTING'] = True
 
     # Flask provides a way to test your application by exposing the Werkzeug test Client
     # and handling the context locals for you.
     testing_client = flask_app.test_client()
     
-    # Establish an application context before running the tests.
-    ctx = flask_app.app_context()
-    ctx.push()
-
     # This is where testing happens
     yield testing_client  # yield statement provides fixture values and executes teardown code
 
-    ctx.pop()
+""" 
+Fixtures that may be used testing db and user model
+
+@pytest.fixture(scope='module')
+def new_user():
+    user = User(username='Ann', email='ann@test.com')
+    return user
 
 @pytest.fixture(scope='module')
 def init_database():
@@ -45,5 +46,17 @@ def init_database():
     # This is where testing happens
     yield db  # yield statement provides fixture values and executes teardown code
 
-    db.drop_all()
+    db.drop_all() 
+    
+# Test User Model
+def test_User(new_user):
+    '''
+    GIVEN a User model
+    WHEN a new User is created
+    THEN check fields are defined correctly
+    '''
+    assert new_user.email == 'ann@test.com'
+    assert new_user.username == 'Ann'
+    
+    """
 
