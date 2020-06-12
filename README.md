@@ -4,6 +4,41 @@
 [![Build Status](https://travis-ci.com/GittieLabs/lovebank-services.svg?branch=master)](https://travis-ci.com/GittieLabs/lovebank-services)
 
 Services framework for the LoveBank App
+
+## Getting Started
+Before running the app, there are a few steps that need to be taken. <br/>
+#### **1.** Create 3 local PostgreSQL databases. You can name them ***lovebank_test***, ***lovebank_dev***, and ***lovebank*** <br/><br/>
+#### **2.** Within the ***lovebank_services*** folder, add a **.env** file and include the following (some information is omitted):<br/>
+````
+APP_SETTINGS="config.TestingRemoteConfig"
+
+SQLALCHEMY_DATABASE_URI_TEST="postgresql://localhost/lovebank_test"
+SQLALCHEMY_DATABASE_URI_DEV="postgresql://localhost/lovebank_dev"
+SQLALCHEMY_DATABASE_URI="postgresql://localhost/lovebank"
+
+SQLALCHEMY_REMOTE_URI_TEST="postgresql://{username}:{password}@000.000.00.000/lovebank_test"
+SQLALCHEMY_REMOTE_URI_DEV="postgresql{username}:{password}@000.000.00.000/lovebank_dev"
+SQLALCHEMY_REMOTE_URI="postgresql://{username}:{password}@000.000.00.000/lovebank"
+````
+- Point the top 3 URIs to the 3 local PostgreSQL databases you created  <br/>
+- Point the bottom 3 URIs to the remote PostgreSQL databases (please see Keybase for complete URIs) <br/> 
+- **APP_SETTINGS** will determine which database the flask app connects to when run. Refer to the following guide when deciding its value:
+    - APP_SETTINGS="config.TestingConfig" will connect to the database referenced by SQLALCHEMY_DATABASE_URI_TEST <br/>
+    - APP_SETTINGS="config.DevelopmentConfig" will connect to database referenced by SQLALCHEMY_DATABASE_URI_DEV  <br/>
+    - APP_SETTINGS="config.ProductionConfig" will connect to the database referenced by SQLALCHEMY_DATABASE_URI   <br/>
+    - APP_SETTINGS="config.TestingRemoteConfig" will connect to the database referenced by SQLALCHEMY_REMOTE_URI_TEST <br/>
+    - APP_SETTINGS="config.DevelopmentRemoteConfig" will connect to database referenced by SQLALCHEMY_REMOTE_URI_DEV  <br/>
+    - APP_SETTINGS="config.ProductionRemoteConfig" will connect to the database referenced by SQLALCHEMY_REMOTE_URI   <br/>
+
+#### **3.** Within the ***key_management_service*** folder, add another **.env** file and include the following (some information is omitted):<br/>
+```
+AWS_ACCESS_ID={ACCESS_KEY_HIDDEN}
+AWS_ACCESS_KEY={ACCESS_KEY_HIDDEN}
+```
+Please refer to keybase for access keys
+
+ <br/><br/>
+
 ## Running the Flask app
 To avoid dependency conflicts, it is best to use a virtual environment to run the app.
 ### 1. Create and run virtual environment:
@@ -26,17 +61,14 @@ Detailed instructions: https://www.youtube.com/watch?v=APOPm01BVrk
 $ pip install -r requirements.txt
 ```
 
-### 3. Run the run.py file
+### 3. Run the app.py file
 ```
-$ python run.py
+$ python app.py
 ```
 - "You have reached the microservice module of LoveBank!" should load on port 5000 (http://localhost:5000/)
 - If message loads successfully, then the flask app is running and a database has been initialized locally
 - Use CTRL-C to stop running app
-##### Note: If you get an error or to reset the database (delete the db file and re-initialize), run the reset_db.py file
-```
-$ python reset_db.py
-```
+
 
 <br/><br/> 
 
@@ -73,6 +105,8 @@ $ python3 -m pytest
   - [tasks/{task_id}](#put-taskstask_id)
 - ### DELETE
   - [tasks/{task_id}](#delete-taskstask_id)
+- ### [Populating Tables](#populating-user-table)
+- ### [Clearing Tables](#clearing-user-table)
 
 <br/><br/> 
 
@@ -148,6 +182,29 @@ Replace {task_id} with the ID of the task you want to delete. If the delete was 
   "result": true
 }
 ```
+### Populating User Table
+#### `GET /populateUser/{int:rows}`
+To populate the User table, simply run a GET request to the above endpoint and replace *{int:rows}* with the amount of rows you wish to add to the User table.
+
+<br/><br/>
+
+### Populating Task Table
+#### `GET /populateTask/{int:rows}`
+To populate the Task table, simply run a GET request to the above endpoint and replace *{int:rows}* with the amount of rows you wish to add to the Task table.
+
+<br/><br/>
+
+### Clearing User Table
+#### `GET /clearUser`
+To clear the User table, run a GET request to the endpoint above.
+
+<br/><br/>
+
+### Clearing Task Table
+#### `GET /clearTask`
+To clear the Task table, run a GET request to the endpoint above.
+
+<br/><br/>
 
 ## Testing and Integration Pipeline
 Upon publishing new commits and merging branches, Travis CI will be triggered to perform tests and then build the new application. If all the tests passed, the updated application will be deployed automatically as well. 

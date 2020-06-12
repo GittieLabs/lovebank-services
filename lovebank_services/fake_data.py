@@ -1,12 +1,13 @@
+import os
 import random
 from faker import Faker
-from lovebank_services import db, User, Task
+from dotenv import load_dotenv
+from lovebank_services import db, engine, User, Task
 from sqlalchemy import func
-
 
 def populate_user_table(rows, linked):
     """
-    This method populates the user table with the number of rows
+    This method populates the User table with the number of rows
     specified by the parameter. If linked = true, the users will be linked to each other.
     Based on the logic of this method, if rows = 10, user 1 will be lined to user 10,
     user 2 will be linked to user 9...
@@ -23,6 +24,7 @@ def populate_user_table(rows, linked):
     else:
         # Retrieve the largest user_id in db
         partner_id_value = db.session.query(func.max(User.id)).scalar()
+        print(str(partner_id_value))
         if not partner_id_value:
             partner_id_value = rows
         else:
@@ -51,7 +53,6 @@ def populate_task_table(rows):
     # If no users exist yet, an error message will be returned
     if not max_creator_id or not max_partner_id:
         print('Error: Fill task table failed. \nNo users have been created yet or users have not been linked.')
-        quit()
 
     f = Faker()
     sample_tasks = ['buy groceries', 'do something', 'Wash dishes', 'feed the baby', 'walk the dog',
@@ -65,7 +66,6 @@ def populate_task_table(rows):
         rand_cost = f.pyint(min_value=50, max_value=500, step=50)
         db.session.add(Task(creator_id=rand_creator_id, receiver_id=rand_receiver_id,
                             title=rand_title, description='Just do it', cost=rand_cost))
-
     db.session.commit()
 
 
@@ -76,9 +76,14 @@ def clear_table(model):
     :param model: the model to be cleared
     :return: None
     """
-    if model not in (User, Task):
-        print('Error: please enter either User or Task for clear_table().')
-        quit()
+    # if model not in (User, Task):
+    #     print('Error: please enter either User or Task for clear_table().')
+    #     quit()
+    # db.session.query(model).delete()
+    # db.session.commit()
 
-    db.session.query(model).delete()
-    db.session.commit()
+    if model == Task:
+        engine.execute("DROP TABLE task;")
+    if model == User:
+        engine.execute('DROP TABLE "user" CASCADE;')
+    db.create_all()

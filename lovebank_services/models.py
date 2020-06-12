@@ -3,6 +3,8 @@ from datetime import datetime, timedelta
 
 # User Model
 class User(db.Model):
+    __tablename__ = "user"
+
     id = db.Column(db.Integer, unique=True ,primary_key=True)
     partner_id = db.Column(db.Integer, unique=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
@@ -27,12 +29,15 @@ class User(db.Model):
         return f"User('username: {self.username}', email: '{self.email}')"
 
 
+
 # Task Model
 class Task(db.Model):
+    __tablename__ = "task"
+
     id = db.Column(db.Integer, primary_key=True)
     creationTime = db.Column(db.DateTime, default=datetime.utcnow())
     creator_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    receiver_id = db.Column(db.Integer, db.ForeignKey('user.partner_id'), nullable=False)
+    receiver_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     title = db.Column(db.String(50), nullable=False)
     description = db.Column(db.String(120), nullable=False)
     cost = db.Column(db.Integer, nullable=False)
@@ -59,4 +64,3 @@ class Task(db.Model):
 
     def __repr__(self):
         return 'Task(id: %d, title: %s, description: %s, cost: %d)' % (self.id, self.title, self.description, self.cost)
-

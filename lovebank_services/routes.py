@@ -1,8 +1,10 @@
 from flask import jsonify, abort, request, make_response, url_for
 from lovebank_services import app, db
 from lovebank_services.models import User, Task
+from lovebank_services.fake_data import *
 from datetime import datetime
 import os
+
 
 # TASK ROUTES
 @app.route("/", methods=['GET'])
@@ -62,3 +64,37 @@ def delete_task(task_id):
         db.session.commit()
         return jsonify({'result': True})
     abort(404)
+
+
+# DEV ROUTES
+@app.route('/users', methods=['GET'])
+def get_user():
+    if User.query.all():
+        return {'Users' : list(user.serialize() for user in User.query.all())}
+    return {'Users': []}
+
+
+@app.route('/populateUser/<int:rows>', methods=['GET'])
+def populate_user(rows):
+    populate_user_table(rows, True)
+    return {'result' : 'True'}
+
+
+@app.route('/populateTask/<int:rows>', methods=['GET'])
+def populate_task(rows):
+    if User.query.all():
+        populate_task_table(rows)
+        return {'result' : 'True'}
+    return {'Error' : 'Fill task table failed. No users have been created yet or users have not been linked'}
+
+
+@app.route('/clearUser', methods=['GET'])
+def clear_user():
+    clear_table(User)
+    return {'result' : 'true'}
+
+
+@app.route('/clearTask', methods=['GET'])
+def clearTask():
+    clear_table(Task)
+    return {'result' : 'true'}
