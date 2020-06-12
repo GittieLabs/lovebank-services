@@ -23,12 +23,12 @@ SQLALCHEMY_REMOTE_URI="postgresql://{username}:{password}@000.000.00.000/loveban
 - Point the top 3 URIs to the 3 local PostgreSQL databases you created  <br/>
 - Point the bottom 3 URIs to the remote PostgreSQL databases (please see Keybase for complete URIs) <br/> 
 - **APP_SETTINGS** will determine which database the flask app connects to when run. Refer to the following guide when deciding its value:
-    - "config.TestingConfig" will connect to the database referenced by SQLALCHEMY_DATABASE_URI_TEST <br/>
-    - "config.DevelopmentConfig" will connect to database referenced by SQLALCHEMY_DATABASE_URI_DEV  <br/>
-    - "config.ProductionConfig" will connect to the database referenced by SQLALCHEMY_DATABASE_URI   <br/>
-    - "config.TestingRemoteConfig" will connect to the database referenced by SQLALCHEMY_REMOTE_URI_TEST <br/>
-    - "config.DevelopmentRemoteConfig" will connect to database referenced by SQLALCHEMY_REMOTE_URI_DEV  <br/>
-    - "config.ProductionRemoteConfig" will connect to the database referenced by SQLALCHEMY_REMOTE_URI   <br/>
+    - APP_SETTINGS="config.TestingConfig" will connect to the database referenced by SQLALCHEMY_DATABASE_URI_TEST <br/>
+    - APP_SETTINGS="config.DevelopmentConfig" will connect to database referenced by SQLALCHEMY_DATABASE_URI_DEV  <br/>
+    - APP_SETTINGS="config.ProductionConfig" will connect to the database referenced by SQLALCHEMY_DATABASE_URI   <br/>
+    - APP_SETTINGS="config.TestingRemoteConfig" will connect to the database referenced by SQLALCHEMY_REMOTE_URI_TEST <br/>
+    - APP_SETTINGS="config.DevelopmentRemoteConfig" will connect to database referenced by SQLALCHEMY_REMOTE_URI_DEV  <br/>
+    - APP_SETTINGS="config.ProductionRemoteConfig" will connect to the database referenced by SQLALCHEMY_REMOTE_URI   <br/>
 
 #### **3.** Within the ***key_management_service*** folder, add another **.env** file and include the following (some information is omitted):<br/>
 ```
@@ -68,10 +68,7 @@ $ python app.py
 - "You have reached the microservice module of LoveBank!" should load on port 5000 (http://localhost:5000/)
 - If message loads successfully, then the flask app is running and a database has been initialized locally
 - Use CTRL-C to stop running app
-##### Note: If you get an error or to reset the database (delete the db file and re-initialize), run the reset_db.py file
-```
-$ python reset_db.py
-```
+
 
 <br/><br/> 
 
