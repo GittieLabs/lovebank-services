@@ -14,7 +14,7 @@ def hello():
 
 @app.route('/tasks', methods=['GET'])
 def get_tasks():
-    return {'Tasks' : list(task.serialize() for task in Task.query.all())}
+    return {'Tasks': list(task.serialize() for task in Task.query.all())}
 
 
 @app.route('/tasks/<int:task_id>', methods=['GET'])
@@ -29,7 +29,8 @@ def get_task(task_id):
 def create_task():
     if not request.json:
         abort(400)
-    task = Task(creator_id=request.json['creator_id'], receiver_id=request.json['receiver_id'], title=request.json['title'],
+    task = Task(creator_id=request.json['creator_id'], receiver_id=request.json['receiver_id'],
+                title=request.json['title'],
                 description=request.json['description'], cost=request.json['cost'], done=False)
     db.session.add(task)
     db.session.commit()
@@ -70,31 +71,43 @@ def delete_task(task_id):
 @app.route('/users', methods=['GET'])
 def get_user():
     if User.query.all():
-        return {'Users' : list(user.serialize() for user in User.query.all())}
+        return {'Users': list(user.serialize() for user in User.query.all())}
     return {'Users': []}
 
 
-@app.route('/populateUser/<int:rows>', methods=['GET'])
+@app.route('/users', methods=['POST'])
+def create_user():
+    if not request.json:
+        abort(400)
+    user = User(id=request.json['id'], email=request.json['email'])
+    db.session.add(user)
+    db.session.commit()
+    return jsonify(user.serialize())
+
+
+app.route('/populateUser/<int:rows>', methods=['GET'])
+
+
 def populate_user(rows):
     populate_user_table(rows, True)
-    return {'result' : 'True'}
+    return {'result': 'True'}
 
 
 @app.route('/populateTask/<int:rows>', methods=['GET'])
 def populate_task(rows):
     if User.query.all():
         populate_task_table(rows)
-        return {'result' : 'True'}
-    return {'Error' : 'Fill task table failed. No users have been created yet or users have not been linked'}
+        return {'result': 'True'}
+    return {'Error': 'Fill task table failed. No users have been created yet or users have not been linked'}
 
 
 @app.route('/clearUser', methods=['GET'])
 def clear_user():
     clear_table(User)
-    return {'result' : 'true'}
+    return {'result': 'true'}
 
 
 @app.route('/clearTask', methods=['GET'])
 def clearTask():
     clear_table(Task)
-    return {'result' : 'true'}
+    return {'result': 'true'}
