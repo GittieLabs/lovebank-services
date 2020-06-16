@@ -5,8 +5,9 @@ from sqlalchemy import create_engine
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from firebase_admin import credentials
-from key_management_service.get_secrets import *
 import firebase_admin
+from key_management_service.get_secrets import *
+
 
 
 load_dotenv() # Specify which env by setting .env file

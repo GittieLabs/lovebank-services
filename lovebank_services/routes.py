@@ -65,6 +65,11 @@ def delete_task(task_id):
         return jsonify({'result': True})
     abort(404)
 
+#  USER ROUTES
+# @app.route('/users', methods=['POST'])
+# def create_user():
+#     pass
+
 
 # DEV ROUTES
 @app.route('/users', methods=['GET'])
