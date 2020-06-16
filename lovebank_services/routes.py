@@ -67,9 +67,17 @@ def delete_task(task_id):
     abort(404)
 
 
+@app.route('/users/<String: id>', methods=['GET'])
+def get_user():
+    user = User.query.filter_by(id=id).first()
+    if user:
+        return jsonify(user.serialize())
+    abort(404)
+
+
 # DEV ROUTES
 @app.route('/users', methods=['GET'])
-def get_user():
+def get_users():
     if User.query.all():
         return {'Users': list(user.serialize() for user in User.query.all())}
     return {'Users': []}
