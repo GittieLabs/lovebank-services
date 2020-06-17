@@ -76,14 +76,9 @@ def clear_table(model):
     :param model: the model to be cleared
     :return: None
     """
-    # if model not in (User, Task):
-    #     print('Error: please enter either User or Task for clear_table().')
-    #     quit()
-    # db.session.query(model).delete()
-    # db.session.commit()
 
     if model == Task:
-        engine.execute("DROP TABLE task;")
+        db.session.query(Task).delete()
     if model == User:
-        engine.execute('DROP TABLE "user" CASCADE;')
-    db.create_all()
+        db.session.query(User).delete()
+        db.session.query(Task).delete()
