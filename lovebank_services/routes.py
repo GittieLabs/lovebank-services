@@ -66,6 +66,15 @@ def delete_task(task_id):
     abort(404)
 
 
+# USER ROUTES
+@app.route('/user/<int:user_id>', methods=['GET'])
+def get_specific_user(user_id):
+    user = User.query.filter_by(id=user_id).first()
+    if user:
+        return jsonify(user.serialize())
+    abort(404)
+
+
 # DEV ROUTES
 @app.route('/users', methods=['GET'])
 def get_user():
