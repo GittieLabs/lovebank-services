@@ -82,3 +82,4 @@ def clear_table(model):
     if model == User:
         db.session.query(User).delete()
         db.session.query(Task).delete()
+    db.session.commit()
