@@ -183,25 +183,25 @@ Replace {task_id} with the ID of the task you want to delete. If the delete was 
 }
 ```
 ### Populating User Table
-#### `GET /populateUser/{int:rows}`
+#### `POST /populateUser/{int:rows}`
 To populate the User table, simply run a GET request to the above endpoint and replace *{int:rows}* with the amount of rows you wish to add to the User table.
 
 <br/><br/>
 
 ### Populating Task Table
-#### `GET /populateTask/{int:rows}`
+#### `POST /populateTask/{int:rows}`
 To populate the Task table, simply run a GET request to the above endpoint and replace *{int:rows}* with the amount of rows you wish to add to the Task table.
 
 <br/><br/>
 
 ### Clearing User Table
-#### `GET /clearUser`
+#### `DELETE /clearUser`
 To clear the User table, run a GET request to the endpoint above.
 
 <br/><br/>
 
 ### Clearing Task Table
-#### `GET /clearTask`
+#### `DELETE /clearTask`
 To clear the Task table, run a GET request to the endpoint above.
 
 <br/><br/>
