@@ -114,6 +114,7 @@ def delink_user():
     user2 = User.query.filter_by(firebase_uid=request.json['receiver_firebase_uid']).first()
     if (user1.partner_firebase_uid != user1.firebase_uid) or (user2.partner_firebase_uid != user1.partner_firebase_uid):
         return {'Error': 'Invalid request'}
+    #the delink request is only valid when the two users are connected to each other already
     else:
         user1.partner_firebase_uid = None
         user2.partner_firebase_uid = None
