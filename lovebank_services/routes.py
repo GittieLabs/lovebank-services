@@ -112,7 +112,7 @@ def delink_user():
         abort(400)
     user1 = User.query.filter_by(firebase_uid=request.json['requester_firebase_uid']).first()
     user2 = User.query.filter_by(firebase_uid=request.json['receiver_firebase_uid']).first()
-    if (user1.partner_firebase_uid is None) or (user2.partner_firebase_uid is None):
+    if (user1.partner_firebase_uid != user1.firebase_uid) or (user2.partner_firebase_uid != user1.partner_firebase_uid):
         return {'Error': 'Invalid request'}
     else:
         user1.partner_firebase_uid = None
