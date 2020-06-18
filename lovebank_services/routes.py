@@ -70,7 +70,7 @@ def delete_task(task_id):
 
 
 # USER ROUTES
-@app.route('/users/<String: uid>', methods=['GET'])
+@app.route('/users/<string:uid>', methods=['GET'])
 def get_user(uid):
     user = User.query.filter_by(firebase_uid=uid).first()
     if user:
@@ -88,7 +88,7 @@ def create_user():
     return jsonify(user.serialize())
 
 
-@app.route('/linkusers', methods=['POST'])
+@app.route('/users/link', methods=['POST'])
 # Need a JSON file specifying the requester firebase_UID and receiver firebase_UID
 def link_user():
     if not request.json:
@@ -105,7 +105,7 @@ def link_user():
         return {'result': 'true'}
 
 
-@app.route('/delinkusers', methods=['POST'])
+@app.route('/users/delink', methods=['POST'])
 # Need a JSON file specifying the requester firebase_UID and receiver firebase_UID
 def delink_user():
     if not request.json:
@@ -125,7 +125,7 @@ def delink_user():
 
 # DEV ROUTES
 @app.route('/users', methods=['GET'])
-def get_user():
+def get_users():
     if User.query.all():
         return {'Users': list(user.serialize() for user in User.query.all())}
     return {'Users': []}
