@@ -5,7 +5,8 @@ from datetime import datetime, timedelta
 class User(db.Model):
     __tablename__ = "user"
 
-    id = db.Column(db.Integer, unique=True ,primary_key=True)
+    id = db.Column(db.Integer, unique=True, primary_key=True)
+    firebase_uid = db.Column(db.String(128), unique=True, nullable=True) # set nullable=True to prevent errors when populating table
     partner_id = db.Column(db.Integer, unique=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
