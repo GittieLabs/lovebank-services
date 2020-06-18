@@ -1,34 +1,49 @@
-from lovebank_services import db     # imports db variable from __init__.py
+from lovebank_services import db  # imports db variable from __init__.py
 from datetime import datetime, timedelta
+
+GLOBAL_ID = 1
+GLOBAL_BALANCE = 500
+
+
 
 # User Model
 class User(db.Model):
     __tablename__ = "user"
 
     id = db.Column(db.Integer, unique=True, primary_key=True)
-    firebase_uid = db.Column(db.String(128), unique=True, nullable=True) # set nullable=True to prevent errors when populating table
+    firebase_uid = db.Column(db.String(128), unique=True, nullable=True)  # set nullable=True to prevent errors when populating table
     partner_id = db.Column(db.Integer, unique=True)
+    partner_firebase_uid = db.Column(db.String(128), unique=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     balance = db.Column(db.Integer)
     tasks_created = db.relationship('Task', backref='creator', lazy=True, foreign_keys='Task.creator_id')
     tasks_received = db.relationship('Task', backref='receiver', lazy=True, foreign_keys='Task.receiver_id')
 
+    def __init__(self, firebase_uid, email):
+        global GLOBAL_ID
+        self.firebase_uid = firebase_uid
+        self.email = email
+        self.id = GLOBAL_ID
+        GLOBAL_ID += 1
+        self.balance = GLOBAL_BALANCE
+
+
+
     def serialize(self):
         ''' return data as dictionary '''
         return {
-            "id"        :   self.id,
-            "partner_id":   self.partner_id,
-            "username"  :   self.username,
-            "email"     :   self.email,
-            "balance"   :   self.balance,
+            "id": self.id,
+            "partner_id": self.partner_id,
+            "username": self.username,
+            "email": self.email,
+            "balance": self.balance,
             "tasks_received": list(task.serialize() for task in self.tasks_received),
-            "tasks_created" : list(task.serialize() for task in self.tasks_created)
+            "tasks_created": list(task.serialize() for task in self.tasks_created)
         }
 
     def __repr__(self):
         return f"User('username: {self.username}', email: '{self.email}')"
-
 
 
 # Task Model
@@ -50,17 +65,17 @@ class Task(db.Model):
     def serialize(self):
         ''' return data as dictionary '''
         return {
-            "id"          :   self.id,
-            "creationTime":   self.creationTime,
-            "creator_id"  :   self.creator_id,
-            "receiver_id" :   self.receiver_id,
-            "title"       :   self.title,
-            "description" :   self.description,
-            "cost"        :   self.cost,
-            "accepted"    :   self.accepted,
-            "deadline"    :   self.deadline,
-            "compTime"    :   self.compTime,
-            "done"        :   self.done
+            "id": self.id,
+            "creationTime": self.creationTime,
+            "creator_id": self.creator_id,
+            "receiver_id": self.receiver_id,
+            "title": self.title,
+            "description": self.description,
+            "cost": self.cost,
+            "accepted": self.accepted,
+            "deadline": self.deadline,
+            "compTime": self.compTime,
+            "done": self.done
         }
 
     def __repr__(self):
