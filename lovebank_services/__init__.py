@@ -32,19 +32,19 @@ db_string = app.config['SQLALCHEMY_DATABASE_URI']
 engine = create_engine(db_string)
 
 
-# db.create_all() # Please create tables using migrations by running manage.py
+db.create_all() # Please create tables using migrations by running manage.py
 from lovebank_services import routes # to avoid circular import issues, leave this import below initializatoin of db
 
 from lovebank_services import routes # to avoid circular import issues, leave this below db initialization & creation of engine
 
 
 """ Connect to Firebase Project Using KMS - Uncomment below """
-# secret_name = "lovebank-secret"
-# response = get_secret(secret_name)
-# secret_dict = json.loads(response)
-# try:
-#     cred = credentials.Certificate(json.loads(secret_dict['FIREBASE_SERVICE_KEY'])) # path to downloaded firebase service key
-#     firebase_admin.initialize_app(cred)
-#     print("Firebase Connection Successful")
-# except:
-#     print("Error: Firebase Connection Unsuccessful")
+secret_name = "lovebank-secret"
+response = get_secret(secret_name)
+secret_dict = json.loads(response)
+try:
+    cred = credentials.Certificate(json.loads(secret_dict['FIREBASE_SERVICE_KEY'])) # path to downloaded firebase service key
+    firebase_admin.initialize_app(cred)
+    print("Firebase Connection Successful")
+except:
+    print("Error: Firebase Connection Unsuccessful")

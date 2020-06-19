@@ -7,6 +7,8 @@ class User(db.Model):
 
     id = db.Column(db.Integer, unique=True ,primary_key=True)
     partner_id = db.Column(db.Integer, unique=True)
+    partner_firebase_uid = db.Column(db.String(128), unique=True)
+    firebase_uid = db.Column(db.String(128), unique=True, nullable=True)  # set nullable=True to prevent errors when populating table
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     balance = db.Column(db.Integer)
@@ -18,6 +20,8 @@ class User(db.Model):
         return {
             "id"        :   self.id,
             "partner_id":   self.partner_id,
+            "firebase_uid" : self.firebase_uid,
+            "partner_firebase_uid" : self.partner_firebase_uid,
             "username"  :   self.username,
             "email"     :   self.email,
             "balance"   :   self.balance,

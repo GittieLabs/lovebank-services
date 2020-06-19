@@ -85,7 +85,7 @@ def get_user():
 
 @app.route('/populateUser/<int:rows>', methods=['GET'])
 def populate_user(rows):
-    populate_user_table(rows, True)
+    populate_user_table(rows)
     return {'result' : 'True'}
 
 
