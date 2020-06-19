@@ -130,8 +130,13 @@ dmypy.json
 
 # Firebase key
 Firebase-key.json
+/notification_service/love-bank-9a624-firebase-adminsdk-r81q1-9c75f8d0dc.json
 
 # sqlite database
 Test.db
 lovebank_services/.env
+
+# firebase secret
 notification_service/love-bank-9a624-firebase-adminsdk-r81q1-9c75f8d0dc.json
+
+.idea/workspace.xml
