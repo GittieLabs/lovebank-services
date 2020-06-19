@@ -10,10 +10,8 @@ from firebase_admin import auth
 def populate_user_table(rows):
     """
     This method populates the User table with the number of rows
-    specified by the parameter. If linked = true, the users will be linked to each other.
-    Based on the logic of this method, if rows = 10, user 1 will be lined to user 10,
-    user 2 will be linked to user 9...
-    If linked = false, the users won't be linked to each other (partner_id = NULL)
+    specified by the parameter. All created users will not be linked.
+
     :param rows: number of rows to be populated
     :return: None
     """
