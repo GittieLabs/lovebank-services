@@ -9,8 +9,9 @@ from firebase_admin import auth
 
 def populate_user_table(rows):
     """
-    This method populates the User table with the number of rows
-    specified by the parameter. All created users will not be linked.
+    This method populates the User table with the number of rows specified.
+    It will create the number of users in firebase as well.
+    All created users will not be linked.
 
     :param rows: number of rows to be populated
     :return: None
@@ -61,6 +62,7 @@ def clear_table(model):
     """
     This method takes a given table and clears all rows of data from it,
     while preserving the data schema.
+    The users in firebase will be deleted as well.
     :param model: the model to be cleared
     :return: None
     """
