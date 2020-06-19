@@ -145,7 +145,7 @@ def populate_user(rows):
 #     return {'Error': 'Fill task table failed. No users have been created yet or users have not been linked'}
 
 
-@app.route('/clearUser', methods=['DELETE'])
+@app.route('/clearUser', methods=['GET'])
 def clear_user():
     clear_table(User)
     return {'result': 'true'}

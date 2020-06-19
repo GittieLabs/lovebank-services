@@ -68,6 +68,12 @@ def clear_table(model):
     if model == Task:
         db.session.query(Task).delete()
     if model == User:
-        db.session.query(User).delete()
         db.session.query(Task).delete()
+
+        # Delete users in the firebase
+        for value in db.session.query(User.firebase_uid).all():
+            val = ''.join(value)
+            auth.delete_user(val)
+
+        db.session.query(User).delete()
     db.session.commit()
