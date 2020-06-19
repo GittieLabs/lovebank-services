@@ -89,12 +89,12 @@ def populate_user(rows):
     return {'result' : 'True'}
 
 
-@app.route('/populateTask/<int:rows>', methods=['GET'])
-def populate_task(rows):
-    if User.query.all():
-        populate_task_table(rows)
-        return {'result' : 'True'}
-    return {'Error' : 'Fill task table failed. No users have been created yet or users have not been linked'}
+# @app.route('/populateTask/<int:rows>', methods=['GET'])
+# def populate_task(rows):
+#     if User.query.all():
+#         populate_task_table(rows)
+#         return {'result' : 'True'}
+#     return {'Error' : 'Fill task table failed. No users have been created yet or users have not been linked'}
 
 
 @app.route('/clearUser', methods=['GET'])
