@@ -1,7 +1,7 @@
 from lovebank_services import db  # imports db variable from __init__.py
 from datetime import datetime, timedelta
 
-GLOBAL_ID = 1
+# GLOBAL_ID = 1
 GLOBAL_BALANCE = 500
 
 
@@ -20,13 +20,14 @@ class User(db.Model):
     tasks_created = db.relationship('Task', backref='creator', lazy=True, foreign_keys='Task.creator_id')
     tasks_received = db.relationship('Task', backref='receiver', lazy=True, foreign_keys='Task.receiver_id')
 
-    def __init__(self, firebase_uid, email):
-        global GLOBAL_ID
+    def __init__(self, firebase_uid, email, username):
+        # global GLOBAL_ID
         self.firebase_uid = firebase_uid
         self.email = email
-        self.id = GLOBAL_ID
-        GLOBAL_ID += 1
+        # self.id = GLOBAL_ID
+        # GLOBAL_ID += 1
         self.balance = GLOBAL_BALANCE
+        self.username = username
 
 
 
