@@ -68,8 +68,16 @@ def delete_task(task_id):
 
 # USER ROUTES
 @app.route('/user/<int:user_id>', methods=['GET'])
-def get_specific_user(user_id):
+def get_user_by_id(user_id):
     user = User.query.filter_by(id=user_id).first()
+    if user:
+        return jsonify(user.serialize())
+    abort(404)
+
+
+@app.route('/user/firebase/<uid>', methods=['GET'])
+def get_user_by_firebase_id(uid):
+    user = User.query.filter_by(firebase_uid=uid).first()
     if user:
         return jsonify(user.serialize())
     abort(404)
@@ -85,16 +93,16 @@ def get_user():
 
 @app.route('/populateUser/<int:rows>', methods=['GET'])
 def populate_user(rows):
-    populate_user_table(rows, True)
+    populate_user_table(rows)
     return {'result' : 'True'}
 
 
-@app.route('/populateTask/<int:rows>', methods=['GET'])
-def populate_task(rows):
-    if User.query.all():
-        populate_task_table(rows)
-        return {'result' : 'True'}
-    return {'Error' : 'Fill task table failed. No users have been created yet or users have not been linked'}
+# @app.route('/populateTask/<int:rows>', methods=['GET'])
+# def populate_task(rows):
+#     if User.query.all():
+#         populate_task_table(rows)
+#         return {'result' : 'True'}
+#     return {'Error' : 'Fill task table failed. No users have been created yet or users have not been linked'}
 
 
 @app.route('/clearUser', methods=['GET'])
