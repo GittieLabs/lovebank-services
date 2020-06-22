@@ -37,13 +37,16 @@ You should see something like this as the response:
 ```
 
 ### 3. DB schema migration (Local)
-Set up .env file for database and place it within subfolder "lovebank_services". Your ENV file should look like this:
+Set up .env file for database and place it within subfolder "lovebank_services". Refer to files shared within Keybase for remote database credentials. Your ENV file should look like this:
 ```
 DATABASE_URL="postgresql://{db_user_name}:{DB password}@localhost/lovebank"
 APP_SETTINGS="config.TestingConfig"
 SQLALCHEMY_DATABASE_URI="postgresql://{db_user_name}:{DB password}@localhost/lovebank"
 SQLALCHEMY_DATABASE_URI_DEV="postgresql://{db_user_name}:{DB password}/lovebank_dev"
 SQLALCHEMY_DATABASE_URI_TEST="postgresql://{db_user_name}:{DB password}/lovebank_test"
+SQLALCHEMY_REMOTE_URI="postgresql://{db_user_name}:{DB password}@localhost/lovebank"
+SQLALCHEMY_REMOTE_URI_DEV="postgresql://{db_user_name}:{DB password}/lovebank_dev"
+SQLALCHEMY_REMOTE_URI_TEST="postgresql://{db_user_name}:{DB password}/lovebank_test"
 ```
 Notice APP_SETTINGS here DOES NOT apply to migrations env and it only applies to running Flask App or running Flask tests. 
 Upon running manage.py script, you would need to specify the database by setting APP_SETTINGS by (either TestingConfig, ProductionConfig or TestingConfig):
