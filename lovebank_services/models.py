@@ -22,7 +22,9 @@ class User(db.Model):
         ''' return data as dictionary '''
         return {
             "id": self.id,
+            "firebase_uid": self.firebase_uid,
             "partner_id": self.partner_id,
+            "partner_firebase_uid": self.partner_firebase_uid,
             "username": self.username,
             "email": self.email,
             "balance": self.balance,

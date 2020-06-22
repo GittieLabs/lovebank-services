@@ -75,7 +75,7 @@ def get_user_by_id(user_id):
     abort(404)
 
 
-@app.route('/user/firebase/<int:uid>', methods=['GET'])
+@app.route('/user/firebase/<uid>', methods=['GET'])
 def get_user_by_firebase_id(uid):
     user = User.query.filter_by(firebase_uid=uid).first()
     if user:

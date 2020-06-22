@@ -2,7 +2,7 @@ import os
 import random
 from faker import Faker
 from dotenv import load_dotenv
-from lovebank_services import db, engine, User, Task
+from lovebank_services import db, User, Task
 from sqlalchemy import func
 from firebase_admin import auth
 
@@ -21,6 +21,7 @@ def populate_user_table(rows):
         userEmail = f.email()
         user = auth.create_user(email=userEmail, password="12345678")
         uid = user.uid
+
         db.session.add(User(firebase_uid=uid, username=f.name(), email=userEmail))
 
     db.session.commit()
