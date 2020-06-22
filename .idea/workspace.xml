@@ -46,6 +46,7 @@
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="node.js.detected.package.eslint" value="true" />
@@ -62,7 +63,8 @@
       <recent name="$PROJECT_DIR$/key_management_service" />
     </key>
   </component>
-  <component name="RunManager" selected="Flask server.Flask (lovebank_services/__init__.py)">
+      <!--component name="RunManager" selected="Flask server.Flask (lovebank_services/__init__.py)"-->
+  <component name="RunManager" selected="Flask server.lovebank-services">
     <configuration name="key_test" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="lovebank-services" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -199,6 +201,12 @@
       <workItem from="1591391772141" duration="18779000" />
       <workItem from="1592529364237" duration="479000" />
       <workItem from="1592534574412" duration="287000" />
+      <workItem from="1592358317601" duration="1122000" />
+      <workItem from="1592361911871" duration="2127000" />
+      <workItem from="1592366368004" duration="3041000" />
+      <workItem from="1592374675135" duration="1460000" />
+      <workItem from="1592428065458" duration="286000" />
+      <workItem from="1592527535570" duration="1320000" />
     </task>
     <servers />
   </component>

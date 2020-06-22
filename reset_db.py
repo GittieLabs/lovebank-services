@@ -6,7 +6,7 @@ import os
 class resetDB:
     def reset():
         db.create_all()
-        os.remove("lovebank_services/test.db")
+        #os.remove("lovebank_services/test.db")
         db.create_all()
         print('db reset successful')
 

@@ -12,7 +12,6 @@ def populate_user_table(rows):
     This method populates the User table with the number of rows specified.
     It will create the number of users in firebase as well.
     All created users will not be linked.
-
     :param rows: number of rows to be populated
     :return: None
     """
