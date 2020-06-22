@@ -33,7 +33,7 @@ db_string = app.config['SQLALCHEMY_DATABASE_URI']
 engine = create_engine(db_string)
 
 
-db.create_all() # Please create tables using migrations by running manage.py
+#db.create_all() # Please create tables using migrations by running manage.py
 from lovebank_services import routes # to avoid circular import issues, leave this import below initializatoin of db
 
 from lovebank_services import routes # to avoid circular import issues, leave this below db initialization & creation of engine
