@@ -17,7 +17,7 @@ def get_tasks():
     return {'Tasks' : list(task.serialize() for task in Task.query.all())}
 
 
-@app.route('/tasks/<int:task_id>', methods=['GET'])
+@app.route('/tasks/<task_id>', methods=['GET'])
 def get_task(task_id):
     task = Task.query.filter_by(id=task_id).first()
     if task:
@@ -36,7 +36,7 @@ def create_task():
     return jsonify(task.serialize())
 
 
-@app.route('/tasks/<int:task_id>', methods=['PUT'])
+@app.route('/tasks/<task_id>', methods=['PUT'])
 def update_task(task_id):
     task = Task.query.filter_by(id=task_id).first()
     if task:
@@ -56,7 +56,7 @@ def update_task(task_id):
     abort(404)
 
 
-@app.route('/tasks/<int:task_id>', methods=['DELETE'])
+@app.route('/tasks/<task_id>', methods=['DELETE'])
 def delete_task(task_id):
     task = Task.query.filter_by(id=task_id).first()
     if task:
@@ -67,7 +67,7 @@ def delete_task(task_id):
 
 
 # USER ROUTES
-@app.route('/user/<int:user_id>', methods=['GET'])
+@app.route('/user/<user_id>', methods=['GET'])
 def get_user_by_id(user_id):
     user = User.query.filter_by(id=user_id).first()
     if user:
