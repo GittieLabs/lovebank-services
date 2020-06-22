@@ -82,7 +82,7 @@ def get_user(uid):
 def create_user():
     if not request.json:
         abort(400)
-    user = User(firebase_uid=request.json['firebase_uid'], email=request.json['email'])
+    user = User(firebase_uid=request.json['firebase_uid'], email=request.json['email'], username=request.json['username'])
     db.session.add(user)
     db.session.commit()
     return jsonify(user.serialize())
@@ -98,11 +98,14 @@ def link_user():
     if user1.partner_firebase_uid or user2.partner_firebase_uid:
         return {'Error': 'Invalid request'}
     else:
-        user1.partner_firebase_uid = user2.partner_firebase_uid
-        user2.partner_firebase_uid = user1.partner_firebase_uid
-        user1.partner_id = user2.id
-        user2.partner_id = user1.id
-        return {'result': 'true'}
+        user1.partner_firebase_uid = user2.firebase_uid,
+        user2.partner_firebase_uid = user1.firebase_uid,
+        user1.partner_id = user2.id,
+        user2.partner_id = user1.id,
+        db.session.add(user1)
+        db.session.add(user2)
+        db.session.commit()
+        return {'user1 partner': user1.partner_firebase_uid}
 
 
 @app.route('/users/delink', methods=['POST'])
@@ -112,14 +115,17 @@ def delink_user():
         abort(400)
     user1 = User.query.filter_by(firebase_uid=request.json['requester_firebase_uid']).first()
     user2 = User.query.filter_by(firebase_uid=request.json['receiver_firebase_uid']).first()
-    if (user1.partner_firebase_uid != user1.firebase_uid) or (user2.partner_firebase_uid != user1.partner_firebase_uid):
+    if (user1.partner_firebase_uid != user2.firebase_uid) or (user2.partner_firebase_uid != user1.firebase_uid):
         return {'Error': 'Invalid request'}
     #the delink request is only valid when the two users are connected to each other already
     else:
         user1.partner_firebase_uid = None
         user2.partner_firebase_uid = None
-        user1.partner_id = 0
-        user2.partner_id = 0
+        user1.partner_id = None
+        user2.partner_id = None
+        db.session.add(user1)
+        db.session.add(user2)
+        db.session.commit()
         return {'result': 'true'}
 
 
