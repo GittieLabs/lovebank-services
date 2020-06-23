@@ -8,7 +8,6 @@ from uuid import uuid4
 GLOBAL_BALANCE = 500
 
 
-
 # User Model
 class User(db.Model):
     __tablename__ = "user"
@@ -18,6 +17,8 @@ class User(db.Model):
     partner_id = db.Column(UUID(as_uuid=True), unique=True)
     partner_firebase_uid = db.Column(db.String(128), unique=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
+    invite_code = db.Column(db.String(8), unique=True)
+    phone = db.Column(db.Integer, unique=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
     balance = db.Column(db.Integer, default=0)
     tasks_created = db.relationship('Task', backref='creator', lazy=True, foreign_keys='Task.creator_id')
@@ -43,6 +44,7 @@ class User(db.Model):
             "partner_id": self.partner_id,
             "username": self.username,
             "email": self.email,
+            "invite_code": self.invite_code,
             "balance": self.balance,
             "tasks_received": list(task.serialize() for task in self.tasks_received),
             "tasks_created": list(task.serialize() for task in self.tasks_created)
@@ -50,6 +52,7 @@ class User(db.Model):
 
     def __repr__(self):
         return f"User('username: {self.username}', email: '{self.email}')"
+
 
 
 # Task Model
