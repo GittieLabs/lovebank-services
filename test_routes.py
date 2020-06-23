@@ -54,6 +54,6 @@ def test_tasks_post_by_id(test_client):
     """
     # currently will only show that 405 error is generated
     # TO DO: configure db fixture in conftest.py & make a POST request with mock data
-    response = test_client.post('/tasks/123')
+    response = test_client.post('/tasks/1cf96ab3-f693-4909-9d32-067438bc9636')
     assert response.status_code == 405
     assert response.content_type == 'text/html; charset=utf-8'
