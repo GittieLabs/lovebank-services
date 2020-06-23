@@ -30,7 +30,7 @@ def test_tasks_get_by_id(test_client):
     """
     # currently will only show that 404 error is generated
     # TO DO: make test with a valid task id to query for
-    response = test_client.get('/tasks/123')
+    response = test_client.get('/tasks/1cf96ab3-f693-4909-9d32-067438bc9636')
     assert response.status_code == 404
     assert response.content_type == 'text/html; charset=utf-8'
 
