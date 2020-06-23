@@ -120,13 +120,16 @@ def link_user():
     # find receiver with id passed in JSON object
     user2 = User.query.filter_by(id=request.json['receiver_id']).first()
 
-    if user1.partner_id or user2.partner_id:
+    if user1.partner_id or user2.partner_id or user1.id == user2.id:
         return {'Error': 'Invalid request'}
     else:
         user1.partner_firebase_uid = user2.firebase_uid,
         user2.partner_firebase_uid = user1.firebase_uid,
         user1.partner_id = user2.id,
         user2.partner_id = user1.id,
+        # Nullify invite_codes after users are paired
+        user1.invite_code = None
+        user2.invite_code = None
         db.session.add(user1)
         db.session.add(user2)
         db.session.commit()
