@@ -24,7 +24,6 @@ print(os.environ['APP_SETTINGS'])
 """ Create a Database Instance """
 db = SQLAlchemy(app)
 from lovebank_services.models import Task, User
-# db.create_all() # Please create tables using migrations by running manage.py
 
 
 """ Create Engine - This will be used to execute SQL commands """
