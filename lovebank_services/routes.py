@@ -9,24 +9,15 @@ import os
 GLOBAL_ID = 0
 
 
-# TASK ROUTES
 @app.route("/", methods=['GET'])
 def hello():
     return "You have reached the microservice module of LoveBank!"
 
 
+# TASK ROUTES
 @app.route('/tasks', methods=['GET'])
 def get_tasks():
     return {'Tasks': list(task.serialize() for task in Task.query.all())}
-
-
-@app.route('/tasks/<int:task_id>', methods=['GET'])
-def get_task(task_id):
-    task = Task.query.filter_by(id=task_id).first()
-    if task:
-        return jsonify(task.serialize())
-    abort(404)
-
 
 @app.route('/tasks', methods=['POST'])
 def create_task():
@@ -39,6 +30,18 @@ def create_task():
     db.session.commit()
     return jsonify(task.serialize())
 
+@app.route('/tasks', methods=['DELETE'])
+def clearTask():
+    clear_table(Task)
+    return {'result': 'true'}
+
+
+@app.route('/tasks/<int:task_id>', methods=['GET'])
+def get_task(task_id):
+    task = Task.query.filter_by(id=task_id).first()
+    if task:
+        return jsonify(task.serialize())
+    abort(404)
 
 @app.route('/tasks/<int:task_id>', methods=['PUT'])
 def update_task(task_id):
@@ -58,7 +61,6 @@ def update_task(task_id):
         return jsonify(Task.query.filter_by(id=task_id).first().serialize())
     abort(404)
 
-
 @app.route('/tasks/<int:task_id>', methods=['DELETE'])
 def delete_task(task_id):
     task = Task.query.filter_by(id=task_id).first()
@@ -70,28 +72,56 @@ def delete_task(task_id):
 
 
 # USER ROUTES
-@app.route('/users/<string:uid>', methods=['GET'])
-def get_user(uid):
-    user = User.query.filter_by(firebase_uid=uid).first()
-    if user:
-        return jsonify(user.serialize())
-    abort(404)
-
+@app.route('/users', methods=['GET'])
+def get_users():
+    if User.query.all():
+        return {'Users': list(user.serialize() for user in User.query.all())}
+    return {'Users': []}
 
 @app.route('/users', methods=['POST'])
 def create_user():
     if not request.json:
         abort(400)
+    if request.json.get('populate', False):
+        rows = request.json['populate']
+        return populate_user(rows)
     user = User(firebase_uid=request.json['firebase_uid'], email=request.json['email'], username=request.json['username'])
     db.session.add(user)
     db.session.commit()
     return jsonify(user.serialize())
 
+@app.route('/users', methods=['DELETE'])
+def clear_user():
+    clear_table(User)
+    return {'result': 'true'}
 
-@app.route('/users/code', methods=['PUT'])
-def get_code():
-    if 'requester_id' in request.json:
-        user = User.query.filter_by(id=request.json['requester_id']).first()
+
+@app.route('/users/<string:fid>', methods=['GET'])
+def get_user(fid):
+    user = User.query.filter_by(firebase_uid=fid).first()
+    if user:
+        return jsonify(user.serialize())
+    abort(404)
+
+@app.route('/users/<string:uid>', methods=['PUT'])
+def modify_user(uid):
+    if not request.json:
+        abort(400)
+    if request.json.get('action', False):
+        print(request.json['action'])
+        act = request.json['action']
+        if act == 'invite':
+            return get_code(request, uid)
+        elif act == 'accept':
+            return link_user(request, uid)
+        elif act == 'unlink':
+            return unlink_user(request, uid)
+    abort(400)
+
+# Generates a unique invite code
+def get_code(request, uid):
+    if uid and uid != '':
+        user = User.query.filter_by(id=uid).first()
         if user:
             # create list of active invite codes - it will be used to ensure uniqueness of generated code
             active_codes = [item[0] for item in db.session.query(User.invite_code).filter(User.invite_code != None).all()]
@@ -106,11 +136,9 @@ def get_code():
         return {'Error' : 'User not found'}
     abort(400)
 
-
-@app.route('/users/link', methods=['PUT'])
-# Need a JSON object specifying the invite code and receiver id
-def link_user():
-    if not request.json or 'invite_code' not in request.json or 'receiver_id' not in request.json:
+# Need a JSON object specifying the invite code
+def link_user(request, uid):
+    if not request.json or 'invite_code' not in request.json or uid == '':
         abort(400)
     # find requester with invite code
     user1 = User.query.filter_by(invite_code=request.json['invite_code']).first()
@@ -118,7 +146,7 @@ def link_user():
     if not user1:
         return {'Error': 'Invalid invitation code'}
     # find receiver with id passed in JSON object
-    user2 = User.query.filter_by(id=request.json['receiver_id']).first()
+    user2 = User.query.filter_by(id=uid).first()
 
     if user1.partner_id or user2.partner_id or user1.id == user2.id:
         return {'Error': 'Invalid request'}
@@ -135,15 +163,13 @@ def link_user():
         db.session.commit()
         return {'user1 partner': user1.partner_firebase_uid}
 
-
-@app.route('/users/delink', methods=['PUT'])
-# Need a JSON file specifying the requester firebase_UID and receiver firebase_UID
-def delink_user():
-    if not request.json or 'requester_id' not in request.json or 'receiver_id' not in request.json:
+# Need a JSON file specifying the receiver firebase_UID
+def unlink_user(request, uid):
+    if not request.json or uid == '':
         abort(400)
-    user1 = User.query.filter_by(id=request.json['requester_id']).first()
-    user2 = User.query.filter_by(id=request.json['receiver_id']).first()
-    if (user1.partner_id != user2.id) or (user2.partner_id != user1.id):
+    user1 = User.query.filter_by(id=uid).first()
+    user2 = User.query.filter_by(id=user1.partner_id).first()
+    if (user1.partner_id != user2.id) or (user2.partner_id != user1.id) or not user2:
         return {'Error': 'Invalid request'}
     #the delink request is only valid when the two users are connected to each other already
     else:
@@ -158,14 +184,7 @@ def delink_user():
 
 
 # DEV ROUTES
-@app.route('/users', methods=['GET'])
-def get_users():
-    if User.query.all():
-        return {'Users': list(user.serialize() for user in User.query.all())}
-    return {'Users': []}
 
-
-@app.route('/populateUser/<int:rows>', methods=['GET'])
 def populate_user(rows):
     populate_user_table(rows)
     return {'result': 'True'}
@@ -179,13 +198,6 @@ def populate_user(rows):
 #     return {'Error': 'Fill task table failed. No users have been created yet or users have not been linked'}
 
 
-@app.route('/clearUser', methods=['GET'])
-def clear_user():
-    clear_table(User)
-    return {'result': 'true'}
 
 
-@app.route('/clearTask', methods=['DELETE'])
-def clearTask():
-    clear_table(Task)
-    return {'result': 'true'}
+
