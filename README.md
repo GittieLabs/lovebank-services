@@ -70,7 +70,7 @@ $ python app.py
 - Use CTRL-C to stop running app
 
 
-<br/><br/> 
+<br/><br/>
 
 ## Testing the Database
 ### Using the Unit Test:
@@ -97,31 +97,46 @@ $ python3 -m pytest
 
 ### Using API Endpoints:
 - ### GET
-  - [tasks/](#get-tasks)
-  - [tasks/{task_id}](#get-taskstask_id)
-- ### POST 
-  - [tasks/](#post-tasks)
+  - [/tasks](#get-tasks)
+  - [/tasks/{task_id}](#get-taskstask_id)
+  - [/users](#get-users)
+  - [/users/{firebase_id}](#get-usersfirebase_id)
+- ### POST
+  - [/tasks](#post-tasks)
+  - [/users](#post-users)
 - ### PUT
-  - [tasks/{task_id}](#put-taskstask_id)
+  - [/tasks/{task_id}](#put-taskstask_id)
+  - [/users/{user_id}](#put-usersuser_id)
 - ### DELETE
-  - [tasks/{task_id}](#delete-taskstask_id)
-- ### [Populating Tables](#populating-user-table)
-- ### [Clearing Tables](#clearing-user-table)
+  - [/tasks](#delete-tasks)
+  - [/tasks/{task_id}](#delete-taskstask_id)
+  - [/users](#delete-users)
+  - [/users/{user_id}](#delete-usersuser_id)
 
-<br/><br/> 
+<br/><br/>
 
 #### `GET /tasks`
 This will return a JSON object of all the tasks in the database. It will be a key value pair, where the key is 'Tasks' and the value is a list of task objects.
 
-<br/><br/> 
+<br/><br/>
 
 #### `GET /tasks/{task_id}`
 Replace {task_id} with the id of desired task. It will return a JSON object representing the specified task
 
 <br/><br/>
 
+#### `GET /users`
+This will return a JSON object of all the users in the database. It will be a key value pair, where the key is 'Users' and the value is a list of user objects.
+
+<br/><br/>
+
+#### `GET /users/{firebase_id}`
+Replace {firebase_id} with the firebase id of desired user. It will return a JSON object representing the specified user
+
+<br/><br/>
+
 #### `POST /tasks`
-Add a task using the parameters sent in the request body (JSON). 
+Add a task using the parameters sent in the request body (JSON).
 ##### Parameters
 |          Name | Required |   Type  | Description |
 | -------------:|:--------:|:-------:| ----------- |
@@ -147,7 +162,39 @@ Add a task using the parameters sent in the request body (JSON).
 ```
 <br/><br/>
 
+#### `POST /users`
+If parameter `"populate": {number}` is in the request body (JSON):
+Populate the users table with `{number}` more people
+
+Otherwise:
+Add a user using the parameters sent in the request body (JSON).
+##### Parameters
+|          Name | Required |   Type  | Description |
+| -------------:|:--------:|:-------:| ----------- |
+| `firebase_uid`| required | string  | Firebase ID of user to be created |
+| `email`       | required | string  | Email of user to be created |
+| `username`    | required | string  | Username of user to be created |
+
+##### Example Response
+###### The response will be a representation of the task created
+```
+{
+    "balance": 500,
+    "email": "xyz@gmail.com",
+    "firebase_uid": "8ZriE8QTQ6Mmm6PbZH6nSwiEjjkL",
+    "id": "8e7c264d-0730-4fd3-bf77-4029a95e5eb8",
+    "invite_code": null,
+    "partner_firebase_uid": null,
+    "partner_id": null,
+    "tasks_created": [],
+    "tasks_received": [],
+    "username": "georges"
+}
+```
+<br/><br/>
+
 #### `PUT /tasks/{task_id}`
+Modify a task based on the parameters in the request body (JSON).
 ##### Parameters
 |          Name | Required |   Type  | Description |
 | -------------:|:--------:|:-------:| ----------- |
@@ -173,8 +220,77 @@ Add a task using the parameters sent in the request body (JSON).
 ```
 <br/><br/>
 
-#### `DELETE /tasks/{task_id}`
-Replace {task_id} with the ID of the task you want to delete. If the delete was successful, you will see the response below.                                    
+#### `PUT /users/{user_id}`
+Modify a user in different ways based on the `"action": {act}` parameter in the request body (JSON).
+
+If `"action": "invite"`:
+Sets the invite code on the user with the specified user id.
+##### Parameters
+|          Name | Required |   Type  | Description |
+| -------------:|:--------:|:-------:| ----------- |
+| `action`      | required | string  | Must be "invite" for this action |
+
+##### Example Response
+###### The response will be a representation of the user updated
+```
+{
+    "balance": 500,
+    "email": "brandonmorrow@yahoo.com",
+    "firebase_uid": "Vw5FWxAXGwaSDEne2S58a2Nz12k2",
+    "id": "c525d250-b7e3-492c-a943-99b428c95af0",
+    "invite_code": "9085d9b4",
+    "partner_firebase_uid": null,
+    "partner_id": null,
+    "tasks_created": [],
+    "tasks_received": [],
+    "username": "James Smith"
+}
+```
+
+If `"action": "accept"`:
+Links the user with the specified user id to the user with the invite code in the request body (JSON).
+##### Parameters
+|          Name | Required |   Type  | Description |
+| -------------:|:--------:|:-------:| ----------- |
+| `action`      | required | string  | Must be "accept" for this action |
+| `invite_code` | required | string  | The invite code of the user to link to |
+
+##### Example Response
+###### The response will be a representation of the user updated
+```
+{
+    "balance": 500,
+    "email": "elizabethvance@mcdonald.com",
+    "firebase_uid": "3zJvUANil5IKUDcJmOOb34C0o552",
+    "id": "fa38add0-b691-4710-9d7d-7474945b9c56",
+    "invite_code": null,
+    "partner_firebase_uid": "Vw5FWxAXGwaDuhSECS58a2Nz12k2",
+    "partner_id": "c525d250-b7e3-492c-a943-99b428c95af0",
+    "tasks_created": [],
+    "tasks_received": [],
+    "username": "Cody James"
+}
+```
+
+If `"action": "unlink"`:
+Unlinks the user with the specified user id from their partner and also unlinks their partner.
+##### Parameters
+|          Name | Required |   Type  | Description |
+| -------------:|:--------:|:-------:| ----------- |
+| `action`      | required | string  | Must be "unlink" for this action |
+
+##### Example Response
+###### The response will be the following if unlinking was successful.
+```
+{
+    "result": "true"
+}
+```
+
+<br/><br/>
+
+#### `DELETE /tasks`
+To clear the Task table, run a DELETE request to the endpoint above. If the delete was successful, you will see the response below.
 
 ###### Example Response
 ```
@@ -182,27 +298,42 @@ Replace {task_id} with the ID of the task you want to delete. If the delete was 
   "result": true
 }
 ```
-### Populating User Table
-#### `POST /populateUser/{int:rows}`
-To populate the User table, simply run a GET request to the above endpoint and replace *{int:rows}* with the amount of rows you wish to add to the User table.
 
 <br/><br/>
 
-### Populating Task Table
-#### `POST /populateTask/{int:rows}`
-To populate the Task table, simply run a GET request to the above endpoint and replace *{int:rows}* with the amount of rows you wish to add to the Task table.
+#### `DELETE /tasks/{task_id}`
+Replace {task_id} with the ID of the task you want to delete. If the delete was successful, you will see the response below.
+
+###### Example Response
+```
+{
+  "result": true
+}
+```
 
 <br/><br/>
 
-### Clearing User Table
-#### `DELETE /clearUser`
-To clear the User table, run a GET request to the endpoint above.
+#### `DELETE /users`
+To clear the User table, run a DELETE request to the endpoint above. If the delete was successful, you will see the response below.
+
+###### Example Response
+```
+{
+  "result": true
+}
+```
 
 <br/><br/>
 
-### Clearing Task Table
-#### `DELETE /clearTask`
-To clear the Task table, run a GET request to the endpoint above.
+#### `DELETE /users/{user_id}`
+Replace {user_id} with the ID of the user you want to delete. If the delete was successful, you will see the response below.
+
+###### Example Response
+```
+{
+  "result": true
+}
+```
 
 <br/><br/>
 
