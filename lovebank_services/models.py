@@ -15,7 +15,6 @@ class User(db.Model):
     id = db.Column(UUID(as_uuid=True), default=uuid4, unique=True, primary_key=True)
     firebase_uid = db.Column(db.String(128), unique=True, nullable=True)  # set nullable=True to prevent errors when populating table
     partner_id = db.Column(UUID(as_uuid=True), unique=True)
-    partner_firebase_uid = db.Column(db.String(128), unique=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     invite_code = db.Column(db.String(8), unique=True)
     phone = db.Column(db.Integer, unique=True)
@@ -40,7 +39,6 @@ class User(db.Model):
         return {
             "id": self.id,
             "firebase_uid": self.firebase_uid,
-            "partner_firebase_uid": self.partner_firebase_uid,
             "partner_id": self.partner_id,
             "username": self.username,
             "email": self.email,
@@ -59,7 +57,7 @@ class User(db.Model):
 class Task(db.Model):
     __tablename__ = "task"
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(UUID(as_uuid=True), default=uuid4, primary_key=True)
     creationTime = db.Column(db.DateTime, default=datetime.utcnow())
     creator_id = db.Column(UUID(as_uuid=True), db.ForeignKey('user.id'), nullable=False)
     receiver_id = db.Column(UUID(as_uuid=True), db.ForeignKey('user.id'), nullable=False)

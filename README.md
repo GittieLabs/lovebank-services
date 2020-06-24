@@ -6,7 +6,7 @@
 Services framework for the LoveBank App
 
 ## Getting Started
-Before running the app, there are a few steps that need to be taken. <br/>
+Before running the app, there are a few steps that need to be taken. For more thorough guide on database setup, refer to read me in lovebank-services subfolder. <br/>
 #### **1.** Create 3 local PostgreSQL databases. You can name them ***lovebank_test***, ***lovebank_dev***, and ***lovebank*** <br/><br/>
 #### **2.** Within the ***lovebank_services*** folder, add a **.env** file and include the following (some information is omitted):<br/>
 ````
@@ -74,7 +74,7 @@ $ python app.py
 
 ## Testing the Database
 ### Using the Unit Test:
-To test the SQLite database created locally, run the test_db.py file.
+To test postgres database locally, run the test_db.py file. This will only test the DB specified in your APP_SETTINGS in .env file.
 ```
 $ python test_db.py
 ```

@@ -36,14 +36,14 @@ def clearTask():
     return {'result': 'true'}
 
 
-@app.route('/tasks/<int:task_id>', methods=['GET'])
+@app.route('/tasks/<string:task_id>', methods=['GET'])
 def get_task(task_id):
     task = Task.query.filter_by(id=task_id).first()
     if task:
         return jsonify(task.serialize())
     abort(404)
 
-@app.route('/tasks/<int:task_id>', methods=['PUT'])
+@app.route('/tasks/<string:task_id>', methods=['PUT'])
 def update_task(task_id):
     task = Task.query.filter_by(id=task_id).first()
     if task:
@@ -61,7 +61,7 @@ def update_task(task_id):
         return jsonify(Task.query.filter_by(id=task_id).first().serialize())
     abort(404)
 
-@app.route('/tasks/<int:task_id>', methods=['DELETE'])
+@app.route('/tasks/<string:task_id>', methods=['DELETE'])
 def delete_task(task_id):
     task = Task.query.filter_by(id=task_id).first()
     if task:
