@@ -120,7 +120,8 @@ def modify_user(uid):
 
 @app.route('/users/<string:uid>', methods=['DELETE'])
 def delete_user(uid):
-    user = Task.query.filter_by(id=uid).first()
+    #TODO: unlink in firebase as well
+    user = User.query.filter_by(id=uid).first()
     if user:
         db.session.delete(user)
         db.session.commit()
@@ -171,7 +172,7 @@ def link_user(request, uid):
         db.session.add(user1)
         db.session.add(user2)
         db.session.commit()
-        return {'user1 partner': user1.partner_firebase_uid}
+        return jsonify(user2.serialize())
 
 # Need a JSON file specifying the receiver firebase_UID
 def unlink_user(request, uid):
