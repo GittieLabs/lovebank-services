@@ -118,6 +118,16 @@ def modify_user(uid):
             return unlink_user(request, uid)
     abort(400)
 
+@app.route('/users/<string:uid>', methods=['DELETE'])
+def delete_user(uid):
+    user = Task.query.filter_by(id=uid).first()
+    if user:
+        db.session.delete(user)
+        db.session.commit()
+        return jsonify({'result': True})
+    abort(404)
+
+
 # Generates a unique invite code
 def get_code(request, uid):
     if uid and uid != '':
