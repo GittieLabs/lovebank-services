@@ -5,6 +5,9 @@ from lovebank_services.fake_data import *
 from datetime import datetime
 from uuid import uuid4
 import os
+import re
+
+uuid_pattern = re.compile('^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$')
 
 
 @app.route("/", methods=['GET'])
@@ -94,7 +97,11 @@ def clear_user():
 
 @app.route('/users/<string:fid>', methods=['GET'])
 def get_user(fid):
-    user = User.query.filter_by(firebase_uid=fid).first()
+    is_uuid = uuid_pattern.match(fid)
+    if is_uuid is None:
+        user = User.query.filter_by(firebase_uid=fid).first()
+    else:
+        user = User.query.filter_by(id=fid).first()
     if user:
         return jsonify(user.serialize())
     abort(404)
