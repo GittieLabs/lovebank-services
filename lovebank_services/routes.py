@@ -4,6 +4,7 @@ from lovebank_services.models import User, Task
 from lovebank_services.fake_data import *
 from datetime import datetime
 from uuid import uuid4
+from firebase_admin import auth
 import os
 import re
 
@@ -85,10 +86,12 @@ def create_user():
     if request.json.get('populate', False):
         rows = request.json['populate']
         return populate_user(rows)
-    user = User(firebase_uid=request.json['firebase_uid'], email=request.json['email'], username=request.json['username'])
-    db.session.add(user)
-    db.session.commit()
-    return jsonify(user.serialize())
+    if verifyFID(request.json['firebase_uid']):
+        user = User(firebase_uid=request.json['firebase_uid'], email=request.json['email'], username=request.json['username'])
+        db.session.add(user)
+        db.session.commit()
+        return jsonify(user.serialize())
+    abort(400)
 
 @app.route('/users', methods=['DELETE'])
 def clear_user():
@@ -99,6 +102,8 @@ def clear_user():
 def get_user(fid):
     is_uuid = uuid_pattern.match(fid)
     if is_uuid is None:
+        if !verifyFID(fid):
+            abort(400)
         user = User.query.filter_by(firebase_uid=fid).first()
     else:
         user = User.query.filter_by(id=fid).first()
@@ -123,11 +128,18 @@ def modify_user(uid):
 
 @app.route('/users/<string:uid>', methods=['DELETE'])
 def delete_user(uid):
-    #TODO: unlink in firebase as well
     user = User.query.filter_by(id=uid).first()
     if user:
+        uid = user.id
+        fid = user.firebase_uid
         db.session.delete(user)
         db.session.commit()
+        if verifyFID(fid):
+            try:
+                auth.delete_user(val)
+            except:
+                print("Error deleting user {} with firebase id {} from firebase.".format(uid, fid))
+                abort(500)
         return jsonify({'result': True})
     abort(404)
 
@@ -201,6 +213,20 @@ def populate_user(rows):
     populate_user_table(rows)
     return {'result': 'True'}
 
+def verifyFID(firebase_id):
+    """Verify that a firebase id is valid in firebase"""
+    try:
+        auth.get_user(firebase_id)
+    except ValueError:
+        print("Malformed firebase_id in verifyFID")
+        return False
+    except FirebaseError:
+        print("Unknown firebase error in verifyFID")
+        return False
+    except UserNotFoundError:
+        print("Firebase user {} not found".format(firebase_id))
+        return False
+    return True
 
 # @app.route('/populateTask/<int:rows>', methods=['POST'])
 # def populate_task(rows):
