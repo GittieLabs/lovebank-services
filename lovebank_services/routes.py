@@ -130,6 +130,8 @@ def get_code(request, uid):
     if uid and uid != '':
         user = User.query.filter_by(id=uid).first()
         if user:
+            if user.partner_id:
+                return {'Error': 'User already has a partner'}
             # create list of active invite codes - it will be used to ensure uniqueness of generated code
             active_codes = [item[0] for item in db.session.query(User.invite_code).filter(User.invite_code != None).all()]
             # generate new invite code
