@@ -137,7 +137,7 @@ def delete_user(uid):
         db.session.commit()
         if verifyFID(fid):
             try:
-                auth.delete_user(val)
+                auth.delete_user(fid)
             except:
                 print("Error deleting user {} with firebase id {} from firebase.".format(uid, fid))
                 abort(500)
