@@ -102,7 +102,7 @@ def clear_user():
 def get_user(fid):
     is_uuid = uuid_pattern.match(fid)
     if is_uuid is None:
-        if !verifyFID(fid):
+        if not verifyFID(fid):
             abort(400)
         user = User.query.filter_by(firebase_uid=fid).first()
     else:
