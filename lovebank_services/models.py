@@ -4,10 +4,6 @@ from sqlalchemy.dialects.postgresql import UUID
 from uuid import uuid4
 
 
-# GLOBAL_ID = 1
-GLOBAL_BALANCE = 500
-
-
 # User Model
 class User(db.Model):
     __tablename__ = "user"

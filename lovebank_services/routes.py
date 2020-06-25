@@ -6,8 +6,6 @@ from datetime import datetime
 from uuid import uuid4
 import os
 
-GLOBAL_ID = 0
-
 
 @app.route("/", methods=['GET'])
 def hello():
@@ -34,7 +32,6 @@ def create_task():
 def clearTask():
     clear_table(Task)
     return {'result': 'true'}
-
 
 @app.route('/tasks/<string:task_id>', methods=['GET'])
 def get_task(task_id):
@@ -94,7 +91,6 @@ def create_user():
 def clear_user():
     clear_table(User)
     return {'result': 'true'}
-
 
 @app.route('/users/<string:fid>', methods=['GET'])
 def get_user(fid):
@@ -162,8 +158,6 @@ def link_user(request, uid):
     if user1.partner_id or user2.partner_id or user1.id == user2.id:
         return {'Error': 'Invalid request'}
     else:
-        user1.partner_firebase_uid = user2.firebase_uid,
-        user2.partner_firebase_uid = user1.firebase_uid,
         user1.partner_id = user2.id,
         user2.partner_id = user1.id,
         # Nullify invite_codes after users are paired
@@ -184,8 +178,6 @@ def unlink_user(request, uid):
         return {'Error': 'Invalid request'}
     #the delink request is only valid when the two users are connected to each other already
     else:
-        user1.partner_firebase_uid = None
-        user2.partner_firebase_uid = None
         user1.partner_id = None
         user2.partner_id = None
         db.session.add(user1)
@@ -207,8 +199,3 @@ def populate_user(rows):
 #         populate_task_table(rows)
 #         return {'result': 'True'}
 #     return {'Error': 'Fill task table failed. No users have been created yet or users have not been linked'}
-
-
-
-
-
