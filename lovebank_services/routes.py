@@ -5,6 +5,7 @@ from lovebank_services.fake_data import *
 from datetime import datetime
 from uuid import uuid4
 from firebase_admin import auth
+from firebase_admin.auth import UserNotFoundError
 import os
 import re
 
@@ -217,14 +218,11 @@ def verifyFID(firebase_id):
     """Verify that a firebase id is valid in firebase"""
     try:
         auth.get_user(firebase_id)
-    except ValueError:
-        print("Malformed firebase_id in verifyFID")
-        return False
-    except FirebaseError:
-        print("Unknown firebase error in verifyFID")
-        return False
     except UserNotFoundError:
         print("Firebase user {} not found".format(firebase_id))
+        return False
+    except:
+        print("Unknown firebase error in verifyFID")
         return False
     return True
 
