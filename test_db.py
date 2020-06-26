@@ -1,4 +1,6 @@
 import unittest
+from uuid import UUID
+
 from lovebank_services import db
 from lovebank_services.models import User, Task
 from datetime import datetime

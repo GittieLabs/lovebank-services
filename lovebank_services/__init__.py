@@ -5,8 +5,9 @@ from sqlalchemy import create_engine
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from firebase_admin import credentials
-from key_management_service.get_secrets import *
 import firebase_admin
+from key_management_service.get_secrets import *
+
 
 
 load_dotenv() # Specify which env by setting .env file
@@ -33,8 +34,6 @@ engine = create_engine(db_string)
 
 # db.create_all() # Please create tables using migrations by running manage.py
 from lovebank_services import routes # to avoid circular import issues, leave this import below initializatoin of db
-
-from lovebank_services import routes # to avoid circular import issues, leave this below db initialization & creation of engine
 
 
 """ Connect to Firebase Project Using KMS - Uncomment below """

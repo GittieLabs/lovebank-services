@@ -3,7 +3,6 @@ from lovebank_services.models import User, Task
 import os
 
 ''' clear data from db and re-initialize
- 
  notice this script ONLY clears the table within APP_SETTING specified in env file!'''
 
 def reset():
