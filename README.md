@@ -131,7 +131,7 @@ This will return a JSON object of all the users in the database. It will be a ke
 <br/><br/>
 
 #### `GET /users/{firebase_id}`
-Replace {firebase_id} with the firebase id of desired user. It will return a JSON object representing the specified user
+Replace {firebase_id} with the firebase id (or the UUID) of desired user. Whether firebase id or UUID is used is automatically detected. It will return a JSON object representing the specified user
 
 <br/><br/>
 
