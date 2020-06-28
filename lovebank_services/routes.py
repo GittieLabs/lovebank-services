@@ -67,9 +67,47 @@ def delete_task(task_id):
 
 
 # USER ROUTES
+<<<<<<< Updated upstream
 @app.route('/user/<int:user_id>', methods=['GET'])
 def get_user_by_id(user_id):
     user = User.query.filter_by(id=user_id).first()
+=======
+@app.route('/users', methods=['GET'])
+def get_users():
+    if User.query.all():
+        return {'Users': list(user.serialize() for user in User.query.all())}
+    return {'Users': []}
+
+@app.route('/users', methods=['POST'])
+def create_user():
+    if not request.json:
+        abort(400)
+    if request.json.get('populate', False):
+        rows = request.json['populate']
+        linked = request.json['linked']
+        return populate_user(rows, linked)
+    if verifyFID(request.json['firebase_uid']):
+        user = User(firebase_uid=request.json['firebase_uid'], email=request.json['email'], username=request.json['username'])
+        db.session.add(user)
+        db.session.commit()
+        return jsonify(user.serialize())
+    abort(400)
+
+@app.route('/users', methods=['DELETE'])
+def clear_user():
+    clear_table(User)
+    return {'result': 'true'}
+
+@app.route('/users/<string:fid>', methods=['GET'])
+def get_user(fid):
+    is_uuid = uuid_pattern.match(fid)
+    if is_uuid is None:
+        if not verifyFID(fid):
+            abort(400)
+        user = User.query.filter_by(firebase_uid=fid).first()
+    else:
+        user = User.query.filter_by(id=fid).first()
+>>>>>>> Stashed changes
     if user:
         return jsonify(user.serialize())
     abort(404)
@@ -91,6 +129,7 @@ def get_user():
     return {'Users': []}
 
 
+<<<<<<< Updated upstream
 @app.route('/populateUser/<int:rows>', methods=['GET'])
 def populate_user(rows):
     populate_user_table(rows)
@@ -98,6 +137,26 @@ def populate_user(rows):
 
 
 # @app.route('/populateTask/<int:rows>', methods=['GET'])
+=======
+def populate_user(rows, linked):
+    if not populate_user_table(rows, linked):
+        return {'Error': 'Please provide an even row number'}
+    return {'result': 'True'}
+
+def verifyFID(firebase_id):
+    """Verify that a firebase id is valid in firebase"""
+    try:
+        auth.get_user(firebase_id)
+    except UserNotFoundError:
+        print("Firebase user {} not found".format(firebase_id))
+        return False
+    except:
+        print("Unknown firebase error in verifyFID")
+        return False
+    return True
+
+# @app.route('/populateTask/<int:rows>', methods=['POST'])
+>>>>>>> Stashed changes
 # def populate_task(rows):
 #     if User.query.all():
 #         populate_task_table(rows)
