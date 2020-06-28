@@ -67,11 +67,6 @@ def delete_task(task_id):
 
 
 # USER ROUTES
-<<<<<<< Updated upstream
-@app.route('/user/<int:user_id>', methods=['GET'])
-def get_user_by_id(user_id):
-    user = User.query.filter_by(id=user_id).first()
-=======
 @app.route('/users', methods=['GET'])
 def get_users():
     if User.query.all():
@@ -107,7 +102,6 @@ def get_user(fid):
         user = User.query.filter_by(firebase_uid=fid).first()
     else:
         user = User.query.filter_by(id=fid).first()
->>>>>>> Stashed changes
     if user:
         return jsonify(user.serialize())
     abort(404)
@@ -128,16 +122,7 @@ def get_user():
         return {'Users' : list(user.serialize() for user in User.query.all())}
     return {'Users': []}
 
-
-<<<<<<< Updated upstream
-@app.route('/populateUser/<int:rows>', methods=['GET'])
-def populate_user(rows):
-    populate_user_table(rows)
-    return {'result' : 'True'}
-
-
 # @app.route('/populateTask/<int:rows>', methods=['GET'])
-=======
 def populate_user(rows, linked):
     if not populate_user_table(rows, linked):
         return {'Error': 'Please provide an even row number'}
@@ -154,23 +139,3 @@ def verifyFID(firebase_id):
         print("Unknown firebase error in verifyFID")
         return False
     return True
-
-# @app.route('/populateTask/<int:rows>', methods=['POST'])
->>>>>>> Stashed changes
-# def populate_task(rows):
-#     if User.query.all():
-#         populate_task_table(rows)
-#         return {'result' : 'True'}
-#     return {'Error' : 'Fill task table failed. No users have been created yet or users have not been linked'}
-
-
-@app.route('/clearUser', methods=['GET'])
-def clear_user():
-    clear_table(User)
-    return {'result' : 'true'}
-
-
-@app.route('/clearTask', methods=['GET'])
-def clearTask():
-    clear_table(Task)
-    return {'result' : 'true'}
