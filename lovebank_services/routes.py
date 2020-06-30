@@ -2,6 +2,7 @@ from flask import jsonify, abort, request, make_response, url_for
 from lovebank_services import app, db
 from lovebank_services.models import User, Task
 from lovebank_services.fake_data import *
+from notification_service.individual_notification import send_to_user
 from datetime import datetime
 from uuid import uuid4
 from firebase_admin import auth
@@ -161,6 +162,8 @@ def get_code(request, uid):
                 new_code = str(uuid4())[:8]
             user.invite_code = new_code
             db.session.commit()
+            if user.firebase_uid != '':
+                send_to_user(user.firebase_uid, "Code generated", "Share your code with your partner: " + user.invite_code)
             return jsonify(user.serialize())
         return {'Error' : 'User not found'}
     abort(400)
@@ -180,6 +183,9 @@ def link_user(request, uid):
     if user1.partner_id or user2.partner_id or user1.id == user2.id:
         return {'Error': 'Invalid request'}
     else:
+        if user1.firebase_uid != '' and user2.firebase_uid != '':
+            send_to_user(user1.firebase_uid, "Link successful", "You have linked " + user1.username)
+            send_to_user(user2.firebase_uid, "Linked", "You are now linked with " + user2.username)
         user1.partner_id = user2.id,
         user2.partner_id = user1.id,
         # Nullify invite_codes after users are paired
@@ -200,6 +206,9 @@ def unlink_user(request, uid):
         return {'Error': 'Invalid request'}
     #the delink request is only valid when the two users are connected to each other already
     else:
+        if user1.firebase_uid != '' and user2.firebase_uid != '':
+            send_to_user(user1.firebase_uid, "Unlink successful", "You have unlinked " + user1.username)
+            send_to_user(user2.firebase_uid, "Unlinked", "You are no longer linked with " + user2.username)
         user1.partner_id = None
         user2.partner_id = None
         db.session.add(user1)

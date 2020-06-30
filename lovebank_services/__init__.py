@@ -7,10 +7,8 @@ from flask_migrate import Migrate
 from firebase_admin import credentials
 from key_management_service.get_secrets import *
 import firebase_admin
+from firebase_admin import messaging, credentials, firestore  # used in notification service
 from key_management_service.get_secrets import *
-
-
-
 
 load_dotenv() # Specify which env by setting .env file
 
@@ -35,11 +33,6 @@ from lovebank_services.models import Task, User
 db_string = app.config['SQLALCHEMY_DATABASE_URI']
 engine = create_engine(db_string)
 
-
-# db.create_all() # Please create tables using migrations by running manage.py
-from lovebank_services import routes # to avoid circular import issues, leave this import below initializatoin of db
-
-
 """ Connect to Firebase Project Using KMS - Uncomment below """
 secret_name = "lovebank-secret"
 response = get_secret(secret_name)
@@ -50,4 +43,9 @@ try:
     print("Firebase Connection Successful")
 except:
     print("Error: Firebase Connection Unsuccessful")
+
+
+# db.create_all() # Please create tables using migrations by running manage.py
+from lovebank_services import routes # to avoid circular import issues, leave this import below initializatoin of db
+
 

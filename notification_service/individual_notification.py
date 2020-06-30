@@ -1,9 +1,6 @@
-import firebase_admin
-from firebase_admin import messaging, credentials, firestore
+from lovebank_services import firebase_admin as fb_admin
 
-cred = credentials.Certificate("love-bank-9a624-firebase-adminsdk-r81q1-9c75f8d0dc.json") # shared within keybase
-firebase_admin.initialize_app(cred)
-firestore_db = firestore.client()
+firestore_db = fb_admin.firestore.client()
 
 def send_to_device(device_token, title, body):
     """this function will send notification only to one device with token specified"""
@@ -11,21 +8,24 @@ def send_to_device(device_token, title, body):
     # This registration token comes from the client FCM SDKs.
 
     # See documentation on defining a message payload.
-    notification = messaging.Notification(
+    notification = fb_admin.messaging.Notification(
         title=title,
         body=body
     )
 
-    message = messaging.Message(
+    message = fb_admin.messaging.Message(
         notification=notification,
         token=device_token,
     )
 
     # Send a message to the device corresponding to the provided
     # registration token.
-    response = messaging.send(message)
-    # Response is a message ID string.
-    print('Successfully sent message:', response)
+    try:
+        response = fb_admin.messaging.send(message)
+        # Response is a message ID string.
+        print('Successfully sent message:', response)
+    except: # a lot of errors to handle - for instance new device token and old one no longer valid
+        print('Message failed to send')
     # [END send_to_token]
 
 def send_to_user(user_token, title, body):
