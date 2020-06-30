@@ -36,3 +36,5 @@ def send_to_user(user_token, title, body):
 
     for device in all_devices:
         send_to_device(device.id, title, body)
+        print(device.id)
+

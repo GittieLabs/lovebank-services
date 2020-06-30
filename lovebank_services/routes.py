@@ -3,6 +3,7 @@ from lovebank_services import app, db
 from lovebank_services.models import User, Task
 from lovebank_services.fake_data import *
 from notification_service.individual_notification import send_to_user
+from notification_service.status_update_notification import update_notification
 from datetime import datetime
 from uuid import uuid4
 from firebase_admin import auth
@@ -142,6 +143,16 @@ def delete_user(uid):
             except:
                 print("Error deleting user {} with firebase id {} from firebase.".format(uid, fid))
                 abort(500)
+        return jsonify({'result': True})
+    abort(404)
+
+
+@app.route('/update/<string:fid>/<string:device_id>', methods=['GET'])
+def update_notify_user(fid, device_id):
+    user = User.query.filter_by(firebase_uid=fid).first()
+    if user:
+        uid = user.id
+        update_notification(uid, fid, device_id) # send user a notification updates on their tasks
         return jsonify({'result': True})
     abort(404)
 
