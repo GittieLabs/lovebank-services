@@ -163,8 +163,17 @@ Add a task using the parameters sent in the request body (JSON).
 <br/><br/>
 
 #### `POST /users`
-If parameter `"populate": {number}` is in the request body (JSON):
-Populate the users table with `{number}` more people
+If parameter `"populate": {number}` and `"linked": {linked}"` is in the request body (JSON):\
+Populate the users table with `{number}` more people.\
+Populate the users table with linked users if `{linked}` is true, and unlinked users if `{linked}` is false.\
+
+The following provided JSON will populate 2 linked users in the database.
+```
+{
+    "populate": 2,
+    "linked": true
+}
+```
 
 Otherwise:
 Add a user using the parameters sent in the request body (JSON).
