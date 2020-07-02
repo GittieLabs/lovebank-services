@@ -76,11 +76,18 @@ def create_test_user(test_client, email):
         utility function to create a test user
     """
 
+    # delete test user in firebase if already exists
+    try:
+        user = auth.get_user_by_email(email)
+        auth.delete_user(user.uid)
+    except:
+        pass
+
     user = auth.create_user(email=email, password="12345678")
     fid = user.uid
 
     response = test_client.post('/users', data=json.dumps({'firebase_uid': fid,
-                                                           'username': 'create delete pytest',
+                                                           'username': email + ' username',
                                                            'email': email}), content_type='application/json')
     return response
 
@@ -101,6 +108,7 @@ def test_create_delete_users(test_client):
     WHEN the /users endpoint is called with POST or DELETE (individual delete)
     THEN check the user creates and deletes successfully
     """
+    #Set a flag for test functions that depend on creation/deletion working
     test_client.create_delete_success = False
 
     email = "test@pytest.pytest"
@@ -117,10 +125,20 @@ def test_create_delete_users(test_client):
     assert(response.status_code == 200)
     assert(response_data["result"] == True)
 
+    #Set a flag for test functions that depend on creation/deletion working
     test_client.create_delete_success = True
 
 def test_get_users(test_client):
+    """
+    GIVEN a flask application
+    WHEN the /users/id endpoint is called with GET using UUID or firebase id
+    THEN check the user returns successfully
+    """
+
+    #Set a flag for test functions that depend on creation/deletion/getting working
     test_client.get_create_delete_success = False
+
+    #Test depends on creation/deletion
     assert(test_client.create_delete_success)
 
     #get users should be an empty list or a list with users
@@ -132,7 +150,7 @@ def test_get_users(test_client):
     old_users = response_data["Users"]
 
     #create a user
-    response = create_test_user(test_client, "test3@pytest.pytest")
+    response = create_test_user(test_client, "test2@pytest.pytest")
     response_data = json.loads(response.get_data(as_text=True))
     uid = response_data['id']
     fid = response_data['firebase_uid']
@@ -160,59 +178,131 @@ def test_get_users(test_client):
     assert(len(old_users) == len(new_users) - 1)
 
     delete_test_user(test_client, uid)
+
+    #Set a flag for test functions that depend on creation/deletion/getting working
     test_client.get_create_delete_success = True
-    pass
 
 def test_populate_users(test_client):
+    #Test depends on getting/creation/deletion
     assert(test_client.get_create_delete_success)
+
     #get users
+    response = test_client.get('/users')
+    response_data = json.loads(response.get_data(as_text=True))
+    users = response_data["Users"]
+
     #populate 3 users
+    response = test_client.post('/users', data=json.dumps({"populate":3}), content_type='application/json')
     #get_users again
+    response = test_client.get('/users')
+    response_data = json.loads(response.get_data(as_text=True))
+    new_users = response_data["Users"]
+
     #make sure there are 3 more users
-    #for each of the three users
-        #make sure they exist in firebase
-    pass
+    populated = [] #list(set(new_users) - set(users))
+    for x in new_users:
+        match = False
+        for y in users:
+            if x["id"] == y["id"]:
+                match = True
+        if match == False:
+            populated.append(x)
 
-def test_invite_users(test_client):
+    assert(len(populated) == 3)
+
+    #for each of the three users, find in firebase
+    for x in populated:
+        try:
+            auth.get_user(x["firebase_uid"])
+        except:
+            #if the user can't be found in firebase, fail
+            assert(False)
+        delete_test_user(test_client, x["id"])
+
+def test_invite_accept_unlink_users(test_client):
+
+    #Test depends on getting/creation/deletion
     assert(test_client.get_create_delete_success)
+
     #create a user
+    response = create_test_user(test_client, "test3@pytest.pytest")
+    user1 = json.loads(response.get_data(as_text=True))
+
+    response = create_test_user(test_client, "test4@pytest.pytest")
+    user2 = json.loads(response.get_data(as_text=True))
+
     #make sure invite code and partner id is null
+    assert(user1["invite_code"] == None)
+    assert(user1["partner_id"] == None)
+
+    assert(user2["invite_code"] == None)
+    assert(user2["partner_id"] == None)
+
     #invite user
-    #get user
+    response = test_client.put('/users/' + user1["id"], data=json.dumps({"action":"invite"}), content_type="application/json")
+    response_data = json.loads(response.get_data(as_text=True))
+
+    assert(user1["id"] == response_data["id"])
+
     #make sure that invite code exists
+    code = response_data["invite_code"]
+    assert(code != None)
+
+    #invite again
+    response = test_client.put('/users/' + user1["id"], data=json.dumps({"action":"invite"}), content_type="application/json")
+    response_data = json.loads(response.get_data(as_text=True))
+
+    #make sure that code is different and not null
+    new_code = response_data["invite_code"]
+    assert(new_code != None)
+    assert(new_code != code)
+
+    #link user to self
+    response = test_client.put('/users/' + user1["id"], data=json.dumps({"action":"accept", "invite_code": new_code}), content_type="application/json")
+
+    #ensure that this fails
+    response = test_client.get('/users/' + user1["id"])
+    temp_user = json.loads(response.get_data(as_text=True))
+
+    assert(temp_user["partner_id"] == None)
 
     #link two users
+    response = test_client.put('/users/' + user2["id"], data=json.dumps({"action":"accept", "invite_code": new_code}), content_type="application/json")
+    user2 = json.loads(response.get_data(as_text=True))
+
+    response = test_client.get('/users/' + user1["id"])
+    user1 = json.loads(response.get_data(as_text=True))
+
+    assert(user2["partner_id"] == user1["id"])
+    assert(user2["invite_code"] == None and user1["invite_code"] == None)
+
     #invite one of the users
+    response = test_client.put('/users/' + user1["id"], data=json.dumps({"action":"invite"}), content_type="application/json")
+
     #make sure that invite code is still null
-    pass
+    response = test_client.get('/users/' + user1["id"])
+    user1 = json.loads(response.get_data(as_text=True))
+    assert(user1["invite_code"] == None)
 
-def test_link_users(test_client):
-    assert(test_client.get_create_delete_success)
-    #create 2 users
-    #make sure invite code and partner_id is null
-    #invite one user
-    #get invite user and check that invite code exists
-    #link other user
-    #get both users
-    #check that invite code is null
     #check that partner_id on both is linked
+    assert(user1["partner_id"] == user2["id"])
+    assert(user2["partner_id"] == user1["id"])
 
-    #link user to himself
-    #make sure it doesn't work
-    pass
 
-def test_unlink_users(test_client):
-    assert(test_client.get_create_delete_success)
-    #link two users
+
     #unlink
+    response = test_client.put('/users/' + user1["id"], data=json.dumps({"action":"unlink"}), content_type="application/json")
+
+    response = test_client.get('/users/' + user1["id"])
+    user1 = json.loads(response.get_data(as_text=True))
+
+    response = test_client.get('/users/' + user2["id"])
+    user2 = json.loads(response.get_data(as_text=True))
+
     #make sure that invite code is null
+    assert(user1["invite_code"] == None and user2["invite_code"] == None)
     #make sure that partner_id is null
+    assert(user1["partner_id"] == None and user2["partner_id"] == None)
 
-    #unlink a user that doesn't exist
-    #should fail
-
-    #unlink a user that isn't linked
-    #should fail
-    pass
-
-
+    delete_test_user(test_client, user1["id"])
+    delete_test_user(test_client, user2["id"])
