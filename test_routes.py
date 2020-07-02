@@ -192,7 +192,7 @@ def test_populate_users(test_client):
     users = response_data["Users"]
 
     #populate 3 users
-    response = test_client.post('/users', data=json.dumps({"populate":3}), content_type='application/json')
+    response = test_client.post('/users', data=json.dumps({"populate":3,"linked":False}), content_type='application/json')
     #get_users again
     response = test_client.get('/users')
     response_data = json.loads(response.get_data(as_text=True))
