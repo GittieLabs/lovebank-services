@@ -5,27 +5,45 @@ from dotenv import load_dotenv
 from lovebank_services import db, User, Task
 from sqlalchemy import func
 from firebase_admin import auth
+from uuid import uuid4
 
 
-def populate_user_table(rows):
+def populate_user_table(rows, linked):
     """
     This method populates the User table with the number of rows specified.
     It will create the number of users in firebase as well.
-    All created users will not be linked.
+    If linked is true, return linked users; if linked is false, return unlinked users.
     :param rows: number of rows to be populated
     :return: None
     """
     f = Faker()
 
-    for i in range(rows):
-        userEmail = f.email()
-        user = auth.create_user(email=userEmail, password="12345678")
-        uid = user.uid
+    if not linked:
+        for i in range(rows):
+            userEmail = 'FAKE' + f.email()
+            user = auth.create_user(email=userEmail, password="12345678")
+            uid = user.uid
 
-        db.session.add(User(firebase_uid=uid, username=f.name(), email=userEmail))
+            db.session.add(User(firebase_uid=uid, username=f.name(), email=userEmail))
+    else:
+        if rows % 2 != 0:
+            return False
+        else:
+            rows = rows // 2
+            for i in range(rows):
+                userEmail1 = 'fake_' + f.email()
+                userEmail2 = 'fake_' + f.email()
+                user1 = auth.create_user(email=userEmail1, password="12345678")
+                user2 = auth.create_user(email=userEmail2, password="12345678")
+                uid1 = user1.uid
+                uid2 = user2.uid
+                id1 = uuid4()
+                id2 = uuid4()
+                db.session.add(User(firebase_uid=uid1, username=f.name(), email=userEmail1, id=id1, partner_id=id2))
+                db.session.add(User(firebase_uid=uid2, username=f.name(), email=userEmail2, id=id2, partner_id=id1))
 
     db.session.commit()
-
+    return True
 
 # def populate_task_table(rows):
 #     """

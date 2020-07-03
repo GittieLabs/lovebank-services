@@ -99,7 +99,9 @@ def create_user():
         abort(400)
     if request.json.get('populate', False):
         rows = request.json['populate']
-        return populate_user(rows)
+        linked = request.json['linked']
+        return populate_user(rows, linked)
+
     if verifyFID(request.json['firebase_uid']):
         user = User(firebase_uid=request.json['firebase_uid'], email=request.json['email'], username=request.json['username'])
         db.session.add(user)
@@ -238,11 +240,10 @@ def unlink_user(request, uid):
         db.session.commit()
         return {'result': 'true'}
 
-
-# DEV ROUTES
-
-def populate_user(rows):
-    populate_user_table(rows)
+# @app.route('/populateTask/<int:rows>', methods=['GET'])
+def populate_user(rows, linked):
+    if not populate_user_table(rows, linked):
+        return {'Error': 'Please provide an even row number'}
     return {'result': 'True'}
 
 def verifyFID(firebase_id):
@@ -256,6 +257,7 @@ def verifyFID(firebase_id):
         print("Unknown firebase error in verifyFID")
         return False
     return True
+
 
 # @app.route('/populateTask/<int:rows>', methods=['POST'])
 # def populate_task(rows):
