@@ -2,6 +2,9 @@ from flask import jsonify, abort, request, make_response, url_for
 from lovebank_services import app, db
 from lovebank_services.models import User, Task
 from lovebank_services.fake_data import *
+from notification_service.individual_notification import send_to_user
+from notification_service.status_update_notification import update_notification, notify_receiver
+from notification_service.sms_notification import send_sms_customized
 from datetime import datetime
 from uuid import uuid4
 from firebase_admin import auth
@@ -16,6 +19,15 @@ uuid_pattern = re.compile('^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F
 def hello():
     return "You have reached the microservice module of LoveBank!"
 
+# SMS ROUTE
+@app.route('/sms', methods=['POST'])
+def send_sms():
+    if not request.json:
+        abort(400)
+    phone_number = request.json["phone_number"]
+    message = request.json["message"]
+    response = send_sms_customized(phone_number, message)
+    return response
 
 # TASK ROUTES
 @app.route('/tasks', methods=['GET'])
@@ -60,6 +72,7 @@ def update_task(task_id):
         if 'cost' in request.json:
             task.cost = request.json['cost']
         db.session.commit()
+        notify_receiver(task_id, request) # does not sent notification
         return jsonify(Task.query.filter_by(id=task_id).first().serialize())
     abort(404)
 
@@ -147,6 +160,16 @@ def delete_user(uid):
     abort(404)
 
 
+@app.route('/update/<string:fid>/<string:device_id>', methods=['GET'])
+def update_notify_user(fid, device_id):
+    user = User.query.filter_by(firebase_uid=fid).first()
+    if user:
+        uid = user.id
+        update_notification(uid, fid, device_id) # send user a notification updates on their tasks
+        return jsonify({'result': True})
+    abort(404)
+
+
 # Generates a unique invite code
 def get_code(request, uid):
     if uid and uid != '':
@@ -163,6 +186,8 @@ def get_code(request, uid):
                 new_code = str(uuid4())[:8]
             user.invite_code = new_code
             db.session.commit()
+            if user.firebase_uid != '':
+                send_to_user(user.firebase_uid, "Code generated", "Share your code with your partner: " + user.invite_code)
             return jsonify(user.serialize())
         return {'Error' : 'User not found'}
     abort(400)
@@ -182,6 +207,9 @@ def link_user(request, uid):
     if user1.partner_id or user2.partner_id or user1.id == user2.id:
         return {'Error': 'Invalid request'}
     else:
+        if user1.firebase_uid != '' and user2.firebase_uid != '':
+            send_to_user(user1.firebase_uid, "Link successful", "You have linked " + user2.username)
+            send_to_user(user2.firebase_uid, "Linked", "You are now linked with " + user1.username)
         user1.partner_id = user2.id,
         user2.partner_id = user1.id,
         # Nullify invite_codes after users are paired
@@ -202,6 +230,9 @@ def unlink_user(request, uid):
         return {'Error': 'Invalid request'}
     #the delink request is only valid when the two users are connected to each other already
     else:
+        if user1.firebase_uid != '' and user2.firebase_uid != '':
+            send_to_user(user1.firebase_uid, "Unlink successful", "You have unlinked " + user2.username)
+            send_to_user(user2.firebase_uid, "Unlinked", "You are no longer linked with " + user1.username)
         user1.partner_id = None
         user2.partner_id = None
         db.session.add(user1)
