@@ -4,6 +4,7 @@ from lovebank_services.models import User, Task
 from lovebank_services.fake_data import *
 from notification_service.individual_notification import send_to_user
 from notification_service.status_update_notification import update_notification, notify_receiver
+from notification_service.sms_notification import send_sms_customized
 from datetime import datetime
 from uuid import uuid4
 from firebase_admin import auth
@@ -18,6 +19,15 @@ uuid_pattern = re.compile('^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F
 def hello():
     return "You have reached the microservice module of LoveBank!"
 
+# SMS ROUTE
+@app.route('/sms', methods=['POST'])
+def send_sms():
+    if not request.json:
+        abort(400)
+    phone_number = request.json["phone_number"]
+    message = request.json["message"]
+    response = send_sms_customized(phone_number, message)
+    return response
 
 # TASK ROUTES
 @app.route('/tasks', methods=['GET'])
