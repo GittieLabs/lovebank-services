@@ -3,7 +3,7 @@ from lovebank_services import app, db
 from lovebank_services.models import User, Task
 from lovebank_services.fake_data import *
 from notification_service.individual_notification import send_to_user
-from notification_service.status_update_notification import update_notification
+from notification_service.status_update_notification import update_notification, notify_receiver
 from datetime import datetime
 from uuid import uuid4
 from firebase_admin import auth
@@ -62,6 +62,7 @@ def update_task(task_id):
         if 'cost' in request.json:
             task.cost = request.json['cost']
         db.session.commit()
+        notify_receiver(task_id, request) # does not sent notification
         return jsonify(Task.query.filter_by(id=task_id).first().serialize())
     abort(404)
 
@@ -195,8 +196,8 @@ def link_user(request, uid):
         return {'Error': 'Invalid request'}
     else:
         if user1.firebase_uid != '' and user2.firebase_uid != '':
-            send_to_user(user1.firebase_uid, "Link successful", "You have linked " + user1.username)
-            send_to_user(user2.firebase_uid, "Linked", "You are now linked with " + user2.username)
+            send_to_user(user1.firebase_uid, "Link successful", "You have linked " + user2.username)
+            send_to_user(user2.firebase_uid, "Linked", "You are now linked with " + user1.username)
         user1.partner_id = user2.id,
         user2.partner_id = user1.id,
         # Nullify invite_codes after users are paired
@@ -218,8 +219,8 @@ def unlink_user(request, uid):
     #the delink request is only valid when the two users are connected to each other already
     else:
         if user1.firebase_uid != '' and user2.firebase_uid != '':
-            send_to_user(user1.firebase_uid, "Unlink successful", "You have unlinked " + user1.username)
-            send_to_user(user2.firebase_uid, "Unlinked", "You are no longer linked with " + user2.username)
+            send_to_user(user1.firebase_uid, "Unlink successful", "You have unlinked " + user2.username)
+            send_to_user(user2.firebase_uid, "Unlinked", "You are no longer linked with " + user1.username)
         user1.partner_id = None
         user2.partner_id = None
         db.session.add(user1)
