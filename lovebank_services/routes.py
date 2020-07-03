@@ -192,6 +192,23 @@ def link_user(request, uid):
         db.session.commit()
         return jsonify(user2.serialize())
 
+# Need a JSON file specifying the receiver firebase_UID
+def unlink_user(request, uid):
+    if not request.json or uid == '':
+        abort(400)
+    user1 = User.query.filter_by(id=uid).first()
+    user2 = User.query.filter_by(id=user1.partner_id).first()
+    if (user1.partner_id != user2.id) or (user2.partner_id != user1.id) or not user2:
+        return {'Error': 'Invalid request'}
+    #the delink request is only valid when the two users are connected to each other already
+    else:
+        user1.partner_id = None
+        user2.partner_id = None
+        db.session.add(user1)
+        db.session.add(user2)
+        db.session.commit()
+        return {'result': 'true'}
+
 # @app.route('/populateTask/<int:rows>', methods=['GET'])
 def populate_user(rows, linked):
     if not populate_user_table(rows, linked):
@@ -209,6 +226,7 @@ def verifyFID(firebase_id):
         print("Unknown firebase error in verifyFID")
         return False
     return True
+
 
 # @app.route('/populateTask/<int:rows>', methods=['POST'])
 # def populate_task(rows):
