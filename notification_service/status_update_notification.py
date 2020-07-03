@@ -54,6 +54,7 @@ def add_update(uid, fid, update_text):
             u'last_updated': datetime.now(),
             u'message': update_text,
         })
+    return True
 
 def notify_receiver(uid_task, request):
     """ given task UID,
@@ -67,6 +68,7 @@ def notify_receiver(uid_task, request):
         update_str = update_str + k + " updated: " + v + "\n "
 
     add_update(task_receiver.id, task_receiver.firebase_uid, update_str)
+    return True
 
 
 def update_notification(uid, fid, device_token):
@@ -97,6 +99,16 @@ def update_notification(uid, fid, device_token):
             response = fb_admin.messaging.send(message)
             # Response is a message ID string.
             print('Successfully sent update notification:', response)
+            doc_ref = firestore_db.collection('update_status').document(fid)
+            doc_ref.update({
+                u'last_delivery_attempt': datetime.now(),
+                u'message_sent': u'success',
+            })
     except: # a lot of errors to handle - for instance new device token and old one no longer valid
         print('Update notification failed to send')
+        doc_ref = firestore_db.collection('update_status').document(fid)
+        doc_ref.update({
+            u'last_delivery_attempt': datetime.now(),
+            u'message_sent': u'error',
+        })
     # [END send_to_token]
