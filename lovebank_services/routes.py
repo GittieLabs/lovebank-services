@@ -127,6 +127,8 @@ def modify_user(uid):
             return link_user(request, uid)
         elif act == 'unlink':
             return unlink_user(request, uid)
+        elif act == 'revoke':
+            return revoke_invite(request, uid)
     abort(400)
 
 @app.route('/users/<string:uid>', methods=['DELETE'])
@@ -208,6 +210,16 @@ def unlink_user(request, uid):
         db.session.add(user2)
         db.session.commit()
         return {'result': 'true'}
+
+def revoke_invite(request, uid):
+    if uid and uid != '':
+        user = User.query.filter_by(id=uid).first()
+        if user:
+            user.invite_code = None
+            db.session.commit()
+            return jsonify(user.serialize())
+        return {'Error' : 'User not found'}
+    abort(400)
 
 # @app.route('/populateTask/<int:rows>', methods=['GET'])
 def populate_user(rows, linked):
