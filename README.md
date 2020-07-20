@@ -30,7 +30,7 @@ To switch to a project, run the following command - replace {project_id} with th
 ```
 firebase use {project_id}
 ```
-### 5) Install dependencies 
+### 5) Install dependencies. Important: run this command within the "functions/" directory
 ```
 npm install
 ```
