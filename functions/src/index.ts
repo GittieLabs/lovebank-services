@@ -17,8 +17,13 @@ export const invite = functions.https.onRequest(async (req, res) => {
         const inviteCode = uuid4()
         const userRef = db.doc(`users/${req.body.id}`)
         try {
-            await userRef.update({"invite-code" : `${inviteCode}`})
+            await userRef.update({"invite_code" : `${inviteCode}`})
             const updated_user = await db.doc(`users/${req.body.id}`).get()
+            // Add new document to 'invites' collection
+            await db.collection('invites').add({
+                "invite_code": inviteCode,
+                "requester_id": req.body.id
+            })
             // TO DO: send invite code to person
             res.status(200).send(updated_user.data())
         }
@@ -36,18 +41,19 @@ export const invite = functions.https.onRequest(async (req, res) => {
 
 // Accept invite code
 export const accept = functions.https.onRequest(async(req, res) => {
-    const inviteRef = db.collection('invites').where('invite-code', '==', req.body.code)
+    const inviteRef = db.collection('invites').where('invite_code', '==', req.body.code)
     try {
         const receiverID = req.body.id
         const requesterID = (await inviteRef.get()).docs[0].data().requester_id
         const receiverRef = db.doc(`users/${receiverID}`)
         const requesterRef = db.doc(`users/${requesterID}`)
         // pair the users
-        await receiverRef.update({"partner-id": requesterID})
-        await requesterRef.update({"partner-id": receiverID})
+        await receiverRef.update({"partner_id": requesterID})
+        await requesterRef.update({"partner_id": receiverID})
         res.send("Success")
     }
     catch(err) {
+        console.log(err)
         res.status(400).send({Error: "Invalid invitation code"})
     }  
 })
