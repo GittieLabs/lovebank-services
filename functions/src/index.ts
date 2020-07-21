@@ -13,28 +13,24 @@ export const helloWorld = functions.https.onRequest((req, res) => {
 
 // Generate invite code
 export const invite = functions.https.onRequest(async (req, res) => {
-    if (req.method === 'PUT' && req.body.action === 'invite' && req.body.id){
-        const inviteCode = uuid4()
-        const userRef = db.doc(`users/${req.body.id}`)
-        try {
-            await userRef.update({"invite_code" : `${inviteCode}`})
-            const updated_user = await db.doc(`users/${req.body.id}`).get()
-            // Add new document to 'invites' collection
-            await db.collection('invites').add({
-                "invite_code": inviteCode,
-                "requester_id": req.body.id
+    if (req.method === 'PUT' && req.body.action === 'invite' && req.body.id && req.body.mobile){
+        const inviteCode = uuid4() // Create invite code
+        const user = await db.doc(`users/${req.body.id}`).get()
+        if (user.exists) {
+            await db.collection('invites').doc(req.body.id).set({
+                'requester_id': req.body.id,
+                'invite_code' : inviteCode,
+                'mobile': req.body.mobile
             })
-            // TO DO: send invite code to person
-            res.status(200).send(updated_user.data())
+            const invite_doc = await db.doc(`invites/${req.body.id}`).get()
+            res.status(200).send(invite_doc.data())
         }
-        catch(err) {
-            const errorID = uuid4()           // Create error id
-            console.log(`${errorID}: ${err}`) // Log error
-            res.status(500).send({Error: `There was an error in updating user. Error ID: ${errorID}`})
-        }
+        else {
+            res.status(404).send({Error: 'User not found'})
+        }   
     }
     else {
-        res.status(400).send({Error: "Bad request"})
+        res.status(400).send({Error: 'Bad request. Request may be missing user id, action, or mobile'})
     }
 })
 
