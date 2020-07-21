@@ -30,7 +30,8 @@ To switch to a project, run the following command - replace {project_id} with th
 ```
 firebase use {project_id}
 ```
-### 5) Install dependencies 
+### 5) Install dependencies
+Important: run this command within the "/functions" directory
 ```
 npm install
 ```
@@ -38,7 +39,11 @@ npm install
 Functions will be added to the TypeScript file located at "functions/src/index.ts"
 
 ## Running Cloud Functions Locally 
-To be written..
+To emulate the cloud functions locally, run the following command within the "/functions" directory
+```
+npm run serve
+```
+Then, the links provided in the output to trigger the HTTP functions
 
 ## Deploying Cloud Functions
 To be written..
