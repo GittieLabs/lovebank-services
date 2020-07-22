@@ -43,7 +43,7 @@ To emulate the cloud functions locally, run the following command within the "/f
 ```
 npm run serve
 ```
-Then, the links provided in the output to trigger the HTTP functions
+Use the links provided in the output to trigger the HTTP functions
 
 ## Deploying Cloud Functions
 To be written..
