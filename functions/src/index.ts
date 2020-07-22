@@ -1,9 +1,9 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin'
 import {v4 as uuid4} from 'uuid'
-admin.initializeApp()
 
-const db = admin.firestore() // Reference to the firestore db
+admin.initializeApp()
+const db = admin.firestore()
 
 
 // Hello world 
