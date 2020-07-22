@@ -1,6 +1,7 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin'
 import {v4 as uuid4} from 'uuid'
+// import { user } from 'firebase-functions/lib/providers/auth';
 admin.initializeApp()
 
 const db = admin.firestore() // Reference to the firestore db
@@ -14,26 +15,39 @@ export const helloWorld = functions.https.onRequest((req, res) => {
 
 // Generate invite code
 export const invite = functions.https.onRequest(async (req, res) => {
-    if (req.method === 'POST' && req.body.action === 'invite' && req.body.id && req.body.mobile){
-        const inviteCode = uuid4() // Create invite code
+    try {
+        // Check if request is valid
+        if (req.method != 'POST' || req.body.action != 'invite' || !req.body.id || !req.body.mobile){
+            throw({status:400, message:'Request field may be missing or incorrect method used'})
+        }
+        // Check if user exists
         const user = await db.doc(`users/${req.body.id}`).get()
-        if (user.exists) {
-            await db.collection('invites').doc(req.body.id).set({
-                'requester_id': req.body.id,
-                'invite_code' : inviteCode,
-                'mobile': req.body.mobile
-            })
-            const invite_doc = await db.doc(`invites/${req.body.id}`).get()
-            res.status(200).send(invite_doc.data())
+        if (!user.exists) {
+            throw({status:404, message:'User not found'})
         }
-        else {
-            res.status(404).send({Error: 'User not found'})
+        // Check if user is already linked
+        if (user.data()?.partnerId){
+            throw({status:400, message:'User already has partner and cannot create invite code'})
         }
-    }
-    else {
-        res.status(400).send({
-            Error: 'Bad request. Request may be missing user id, action, or mobile.'
+        // Create or update invite document with new invite code
+        const inviteCode = uuid4()
+        await db.collection('invites').doc(req.body.id).set({
+            'requester_id': req.body.id,
+            'invite_code' : inviteCode,
+            'mobile': req.body.mobile
         })
+        const invite_doc = await db.doc(`invites/${req.body.id}`).get()
+
+        res.status(200).send(invite_doc.data())
+    }
+    catch (err) {
+        var status = 500
+        var message = err
+        if (err.status && err.message){
+            status = err.status
+            message = err.message
+        }
+        res.status(status).send({"Error": message})
     }
 })
 
@@ -59,18 +73,19 @@ export const accept = functions.https.onRequest(async(req, res) => {
         if (!requester.exists || !receiver.exists){
             throw({status:404, message:'User not found'})
         }
-        // Check if user is trying to pair with self
+        // Check if user is trying to link with self
         if (requesterID === receiverID){
-            throw({status:400, message:'Cannot pair user with self'}) 
+            throw({status:400, message:'Cannot link user with self'}) 
         }
-        // Check if both users are unpaired
+        // Check if users already have partners
         if (requester.data()?.partnerId || receiver.data()?.partnerId){
-            throw({status:400, message:'User already paired'})
+            throw({status:400, message:'User already has partner'})
         }
         // Update both partnerIds
         await db.doc(`users/${receiverID}`).update({'partnerId' : requesterID})
         await db.doc(`users/${requesterID}`).update({'partnerId' : receiverID})
         const updated_user = await db.doc(`users/${receiverID}`).get()
+
         // Delete invite documents associated with either user
         await db.doc(`invites/${requesterID}`).delete()
         await db.doc(`invites/${receiverID}`).delete()
