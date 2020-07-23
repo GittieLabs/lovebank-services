@@ -31,19 +31,72 @@ To switch to a project, run the following command - replace {project_id} with th
 firebase use {project_id}
 ```
 ### 5) Install dependencies
-Important: run this command within the "/functions" directory
+Within the "**/functions**" directory, run:
 ```
 npm install
 ```
 ## Adding Functions 
-Functions will be added to the TypeScript file located at "functions/src/index.ts"
+Functions are currently declared in the TypeScript file located at "functions/src/index.ts"
 
 ## Running Cloud Functions Locally 
-To emulate the cloud functions locally, run the following command within the "/functions" directory
+Within the "**/functions**" directory, run
 ```
 npm run serve
 ```
-Then, the links provided in the output to trigger the HTTP functions
+This will start the functions emulator and deploy them locally. For HTTPS functions, follow the URIs provided to trigger them.
 
 ## Deploying Cloud Functions
 To be written..
+
+## Using Cloud Functions
+### Create Invite Codes (POST)
+Send a **POST** request to the URI for the invite function. The request body should be a JSON object with the following parameters:
+##### Parameters
+|          Name | Required |   Type  | Description |
+| -------------:|:--------:|:-------:| ----------- |
+| `id`          | required | string  | id of the user sending the invite |
+| `mobile`      | required | string  | mobile number for invitee |
+
+##### Example Request 
+```
+{
+    "id": "AAA4JAwXrwGeoTlZVuz",
+    "mobile": "+12345678901"
+}
+```
+If the request is successful, a document will be added or updated in the **invites** collection. The response will contain this document's data.
+##### Example Response
+```
+{
+    "requester_id": "AAA4JAwXrwGeoTlZVuz",
+    "invite_code": "3333-99f6-4f73-92f3-c51b3a3db37f",
+    "mobile": "+12345678901"
+}
+```
+<br/><br/>
+### Accepting Invites (PUT)
+Send a **PUT** request to the URI for the accept function. The request body should be a JSON object with the following parameters:
+##### Parameters
+|          Name | Required |   Type  | Description |
+| -------------:|:--------:|:-------:| ----------- |
+| `id`          | required | string  | id of the user accepting the invite |
+| `code`        | required | string  | invite code |
+
+##### Example Request 
+```
+{
+    "code": "3333-99f6-4f73-92f3-c51b3a3db37f",
+    "id": "BBB86GaIFXBxRxyUZc3"
+}
+```
+If the request is successful, the **partnerId** field for both users will be updated accordingly. The response will be a JSON object of the updated user document.
+##### Example Response
+```
+{
+    "balance": 0,
+    "displayName": "Bob",
+    "partnerId": "AAA4JAwXrwGeoTlZVuz",
+    "email": "bob@test.com",
+    "mobile": "+12345678901"
+}
+```
