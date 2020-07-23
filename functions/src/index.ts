@@ -29,7 +29,7 @@ export const invite = functions.https.onRequest(async (req, res) => {
             throw({status:400, message:'User already has partner and cannot create invite code'})
         }
         // Create or update invite document with new invite code
-        const inviteCode = uuid4()
+        const inviteCode = (uuid4()).slice(0, 8)
         const creationTime = admin.firestore.Timestamp.now()
         const next_week_in_seconds = creationTime.seconds+604800 // 604800 seconds in a week
         const expirationTime = admin.firestore.Timestamp.fromMillis(next_week_in_seconds * 1000)
