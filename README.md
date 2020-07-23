@@ -68,7 +68,7 @@ Send a **POST** request to the URI for the invite function. The request body sho
     "mobile": "+12345678901"
 }
 ```
-If the request is successful, a document will be added or updated in the **invites** collection. The response will contain this document's data.
+If the request is successful, a document will be added or updated in the **invites** collection. The response will be a JSON representation of this invite document.
 ##### Example Response
 ```
 {
