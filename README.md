@@ -39,7 +39,7 @@ npm install
 Functions are currently declared in the TypeScript file located at "functions/src/index.ts"
 
 ## Running Cloud Functions Locally 
-Within the "**/functions**" directory, run
+Within the "**/functions**" directory, run:
 ```
 npm run serve
 ```
@@ -48,7 +48,7 @@ This will start the functions emulator and deploy them locally. For HTTPS functi
 <br/><br/>
 
 ## Deploying Cloud Functions
-To be written..
+To be written...
 
 <br/><br/>
 
