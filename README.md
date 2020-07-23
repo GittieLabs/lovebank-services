@@ -45,9 +45,12 @@ npm run serve
 ```
 This will start the functions emulator and deploy them locally. For HTTPS functions, follow the URIs provided to trigger them.
 
+<br/><br/>
 
 ## Deploying Cloud Functions
 To be written..
+
+<br/><br/>
 
 ## Using Cloud Functions
 ### Create Invite Codes (POST)
