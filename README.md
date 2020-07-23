@@ -45,6 +45,7 @@ npm run serve
 ```
 This will start the functions emulator and deploy them locally. For HTTPS functions, follow the URIs provided to trigger them.
 
+
 ## Deploying Cloud Functions
 To be written..
 
