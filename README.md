@@ -72,11 +72,20 @@ If the request is successful, a document will be added or updated in the **invit
 ##### Example Response
 ```
 {
+    "creation_time": {
+        "_seconds": 1595478889,
+        "_nanoseconds": 320000000
+    },
+    "expiration_time": {
+        "_seconds": 1596083689,
+        "_nanoseconds": 0
+    },
     "requester_id": "AAA4JAwXrwGeoTlZVuz",
     "invite_code": "3333-99f6-4f73-92f3-c51b3a3db37f",
     "mobile": "+12345678901"
 }
 ```
+Note: The **creation_time** and **expiration_time** fields are created using Firestore timestamps. For more information on Firestore timestamps please refer to [this documentation](https://firebase.google.com/docs/reference/js/firebase.firestore.Timestamp).
 <br/><br/>
 ### Accepting Invites (PUT)
 Send a **PUT** request to the URI for the accept function. The request body should be a JSON object with the following parameters:
