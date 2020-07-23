@@ -1,4 +1,4 @@
-import * as functions from 'firebase-functions';
+import * as functions from 'firebase-functions'
 import * as admin from 'firebase-admin'
 import {v4 as uuid4} from 'uuid'
 
@@ -30,10 +30,15 @@ export const invite = functions.https.onRequest(async (req, res) => {
         }
         // Create or update invite document with new invite code
         const inviteCode = uuid4()
+        const creationTime = admin.firestore.Timestamp.now()
+        const next_week_in_seconds = creationTime.seconds+604800 // 604800 seconds in a week
+        const expirationTime = admin.firestore.Timestamp.fromMillis(next_week_in_seconds * 1000)
         await db.collection('invites').doc(req.body.id).set({
             'requester_id': req.body.id,
             'invite_code' : inviteCode,
-            'mobile': req.body.mobile
+            'mobile': req.body.mobile,
+            'creation_time': creationTime,
+            'expiration_time': expirationTime
         })
         const invite_doc = await db.doc(`invites/${req.body.id}`).get()
 
@@ -58,11 +63,12 @@ export const accept = functions.https.onRequest(async(req, res) => {
         if (req.method != 'PUT' || !req.body.id || !req.body.code){
             throw({status:400, message:'Request field may be missing or incorrect method used'})
         }
-        // Check if invite document exists
+        // Check if invite document exists and has not expired
         const inviteRef = db.collection('invites').where('invite_code', '==', req.body.code)
         const invite = (await inviteRef.get()).docs[0]
-        if (!invite) {
-            throw({status:400, message:'Invalid invite code'})
+        const currentTime = Date.now() // Unix time in milliseconds
+        if (!invite || (invite.data().expiration_time.seconds * 1000) < currentTime) {
+            throw({status:400, message:'Invalid invite code - may be incorrect or expired'})
         }
         // Check if users exist
         const requesterID = invite.data().requester_id
@@ -76,7 +82,7 @@ export const accept = functions.https.onRequest(async(req, res) => {
         if (requesterID === receiverID){
             throw({status:400, message:'Cannot link user with self'}) 
         }
-        // Check if users already have partners
+        // Check if either user already has partner
         if (requester.data()?.partnerId || receiver.data()?.partnerId){
             throw({status:400, message:'User already has partner'})
         }
