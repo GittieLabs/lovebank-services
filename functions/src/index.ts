@@ -28,15 +28,14 @@ export const invite = functions.https.onRequest(async (req, res) => {
         if (user.data()?.partnerId){
             throw({status:400, message:'User already has partner and cannot create invite code'})
         }
-        // Create or update invite document with new invite code
+        // Generate invite code and make sure there are no invites with the same code
         var inviteCode = (uuid4()).slice(0, 5)
         var check = (await db.collection('invites').where('invite_code', '==', inviteCode).get()).docs[0]
-
-        // Make sure invite code is not already in use
         while (check) {
             inviteCode = (uuid4()).slice(0, 5)
             check = (await db.collection('invites').where('invite_code', '==', inviteCode).get()).docs[0]
         }
+        // Create or update invite document with new invite code
         const creationTime = admin.firestore.Timestamp.now()
         const next_week_in_seconds = creationTime.seconds+604800 // 604800 seconds in a week
         const expirationTime = admin.firestore.Timestamp.fromMillis(next_week_in_seconds * 1000)
