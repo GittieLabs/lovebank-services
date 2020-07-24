@@ -60,12 +60,14 @@ Send a **POST** request to the URI for the invite function. The request body sho
 | -------------:|:--------:|:-------:| ----------- |
 | `id`          | required | string  | id of the user sending the invite |
 | `mobile`      | required | string  | mobile number for invitee |
+| `action`      | required | string  | should be set to "invite" |
 
 ##### Example Request 
 ```
 {
     "id": "AAA4JAwXrwGeoTlZVuz",
-    "mobile": "+12345678901"
+    "mobile": "+12345678901",
+    "action": "invite"
 }
 ```
 If the request is successful, a document will be added or updated in the **invites** collection. The response will be a JSON representation of this invite document.
