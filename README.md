@@ -81,7 +81,7 @@ If the request is successful, a document will be added or updated in the **invit
         "_nanoseconds": 0
     },
     "requester_id": "AAA4JAwXrwGeoTlZVuz",
-    "invite_code": "3333-99f6-4f73-92f3-c51b3a3db37f",
+    "invite_code": "731b7db1",
     "mobile": "+12345678901"
 }
 ```
@@ -98,7 +98,7 @@ Send a **PUT** request to the URI for the accept function. The request body shou
 ##### Example Request 
 ```
 {
-    "code": "3333-99f6-4f73-92f3-c51b3a3db37f",
+    "code": "731b7db1",
     "id": "BBB86GaIFXBxRxyUZc3"
 }
 ```
