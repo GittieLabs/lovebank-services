@@ -113,3 +113,11 @@ export const accept = functions.https.onRequest(async(req, res) => {
         res.status(status).send({"Error": message})
     }
 })
+
+
+// SMS, Email - AWS
+exports.aws = require('./aws');
+// SMS - Twilio
+exports.twilio = require('./twilio');
+// Notification using FCM
+exports.fcm = require('./fcm');
