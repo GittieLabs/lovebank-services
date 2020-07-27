@@ -1,0 +1,12 @@
+language: node_js
+node_js:
+  - 10
+script:
+  - cd functions
+  - npm install
+  - npm run build
+  - npm test
+
+  # send notification to slack travis-ci channel
+notifications:
+  slack: lovebankworkspace:jxHHnVQhjeNqMvZosCgFr19T
