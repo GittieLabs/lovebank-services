@@ -2,14 +2,13 @@ import * as functions from 'firebase-functions'
 import * as admin from 'firebase-admin'
 import {v4 as uuid4} from 'uuid'
 
-// admin.initializeApp()
 const db = admin.firestore()
 
 // Generate invite code
 export const invite = functions.https.onRequest(async (req, res) => {
     try {
         // Check if request is valid
-        if (req.method != 'POST' || req.body.action != 'invite' || !req.body.id || !req.body.mobile){
+        if (req.method != 'PUT' || req.body.action != 'invite' || !req.body.id || !req.body.mobile){
             throw({status:400, message:'Request field may be missing or incorrect method used'})
         }
         // Check if user exists
@@ -53,7 +52,6 @@ export const invite = functions.https.onRequest(async (req, res) => {
         res.status(status).send({"Error": message})
     }
 })
-
 
 // Accept invite code
 export const accept = functions.https.onRequest(async(req, res) => {
