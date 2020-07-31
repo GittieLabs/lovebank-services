@@ -60,9 +60,9 @@ export const task_update_notify = functions.firestore.document('tasks/{task_id}'
 
   try{
     if (changed_task.done == true && original_task.done == false){
-      const oldBalance = admin.firestore.doc(`users/${changed_task.receiver_id}`).get('balance');
+      const oldBalance = admin.firestore.document(`users/${changed_task.receiver_id}`).get('balance');
       const newBalance = oldBalance + changed_task.reward;
-      admin.firestore.doc(`users/${changed_task.receiver_id}`).update({'balance': newBalance});
+      admin.firestore.document(`users/${changed_task.receiver_id}`).update({'balance': newBalance});
     }
     
     
