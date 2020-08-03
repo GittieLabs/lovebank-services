@@ -65,6 +65,15 @@ export const invite = functions.https.onRequest(async (req, res) => {
 // Accept invite code
 export const accept = functions.https.onRequest(async(req, res) => {
     try {
+        // Parse and decode ID token from Authorization Header
+        const id_token = validateHeader(req)
+        const decoded_token = await decodeToken(id_token)
+        // Check if ID Token's header matches request body ID
+        console.log(`request uid: ${req.body.id}`)
+        console.log(`token uid:   ${decoded_token.uid}`)
+        if (decoded_token.uid != req.body.id){
+            throw({status:401, message:'unauthorized'})
+        }
         // Check if request is valid
         if (req.method != 'PUT' || !req.body.id || !req.body.code){
             throw({status:400, message:'Request field may be missing or incorrect method used'})
