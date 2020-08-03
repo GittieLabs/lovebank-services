@@ -8,7 +8,7 @@ export const helloWorld = functions.https.onRequest((req, res) => {
 })
 
 // Invite/accept, unlink
-exports.pairing = require('./pairing')
+exports.users = require('./users')
 // SMS, Email - AWS
 exports.aws = require('./aws');
 // SMS - Twilio
