@@ -59,13 +59,6 @@ export const task_update_notify = functions.firestore.document('tasks/{task_id}'
   const original_task = change.before.data();
 
   try{
-    if (changed_task.done == true && original_task.done == false){
-      const oldBalance = admin.firestore.document(`users/${changed_task.receiver_id}`).get('balance');
-      const newBalance = oldBalance + changed_task.reward;
-      admin.firestore.document(`users/${changed_task.receiver_id}`).update({'balance': newBalance});
-    }
-    
-    
     // implementation not optimal - task description
     if (changed_task.description != original_task.description){
       console.log("Task Description Updated")

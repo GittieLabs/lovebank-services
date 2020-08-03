@@ -7,6 +7,15 @@ const db = admin.firestore()
 // Generate invite code
 export const invite = functions.https.onRequest(async (req, res) => {
     try {
+        // Parse and decode ID token from Authorization Header
+        const id_token = validateHeader(req)
+        const decoded_token = await decodeToken(id_token)
+        // Check if ID Token's header matches request body ID
+        console.log(`request uid: ${req.body.id}`)
+        console.log(`token uid:   ${decoded_token.uid}`)
+        if (decoded_token.uid != req.body.id){
+            throw({status:401, message:'unauthorized'})
+        }
         // Check if request is valid
         if (req.method != 'PUT' || req.body.action != 'invite' || !req.body.id || !req.body.mobile){
             throw({status:400, message:'Request field may be missing or incorrect method used'})
@@ -104,3 +113,22 @@ export const accept = functions.https.onRequest(async(req, res) => {
         res.status(status).send({"Error": message})
     }
 })
+
+// Helper function to verify user auth token 
+async function decodeToken(idToken) {
+    try {
+        const decodedToken = await admin.auth().verifyIdToken(idToken)
+        console.log('Token decoding: Success')
+        return decodedToken
+    }
+    catch (err) {
+        return err
+    }
+}
+
+// Helper function to validate auth header
+function validateHeader(req) {
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')){
+        return req.headers.authorization.split('Bearer ')[1]
+    }
+}
