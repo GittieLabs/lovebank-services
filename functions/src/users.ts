@@ -7,12 +7,11 @@ const db = admin.firestore()
 // Generate invite code
 export const invite = functions.https.onRequest(async (req, res) => {
     try {
-        // Parse and decode ID token from Authorization Header
+        // Parse and decode id token from Authorization header
         const id_token = validateHeader(req)
         const decoded_token = await decodeToken(id_token)
-        // Check if ID Token's header matches request body ID
-        console.log(`request uid: ${req.body.id}`)
-        console.log(`token uid:   ${decoded_token.uid}`)
+
+        // Check if token's uid matches request body id
         if (decoded_token.uid != req.body.id){
             throw({status:401, message:'unauthorized'})
         }
@@ -65,12 +64,11 @@ export const invite = functions.https.onRequest(async (req, res) => {
 // Accept invite code
 export const accept = functions.https.onRequest(async(req, res) => {
     try {
-        // Parse and decode ID token from Authorization Header
+        // Parse and decode id token from Authorization header
         const id_token = validateHeader(req)
         const decoded_token = await decodeToken(id_token)
-        // Check if ID Token's header matches request body ID
-        console.log(`request uid: ${req.body.id}`)
-        console.log(`token uid:   ${decoded_token.uid}`)
+
+        // Check if token's uid matches request body id
         if (decoded_token.uid != req.body.id){
             throw({status:401, message:'unauthorized'})
         }
