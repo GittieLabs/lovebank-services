@@ -53,8 +53,8 @@ To be written...
 <br/><br/>
 
 ## Using Cloud Functions
-### Create Invite Codes (POST)
-Send a **POST** request to the URI for the invite function. The request body should be a JSON object with the following parameters:
+### Create Invite Codes (PUT)
+Send a **PUT** request to the URI for the invite function. The request body should be a JSON object with the following parameters:
 ##### Parameters
 |          Name | Required |   Type  | Description |
 | -------------:|:--------:|:-------:| ----------- |
