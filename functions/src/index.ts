@@ -7,7 +7,7 @@ export const helloWorld = functions.https.onRequest((req, res) => {
     res.status(200).send('Welcome to Lovebank!')
 })
 
-// Invite/accept, unlink
+// Invite/accept/revoke, unlink
 exports.users = require('./users')
 // SMS, Email - AWS
 exports.aws = require('./aws');
