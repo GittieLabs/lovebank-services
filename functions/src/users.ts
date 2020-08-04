@@ -12,11 +12,11 @@ export const invite = functions.https.onRequest(async (req, res) => {
         const decoded_token = await decodeToken(id_token)
 
         // Check if token's uid matches request body id
-        if (decoded_token.uid != req.body.id){
+        if (decoded_token.uid === undefined || decoded_token.uid != req.body.id){
             throw({status:401, message:'unauthorized'})
         }
         // Check if request is valid
-        if (req.method != 'PUT' || req.body.action != 'invite' || !req.body.id || !req.body.mobile){
+        if (req.method != 'PUT' || !req.body.id || !req.body.mobile){
             throw({status:400, message:'Request field may be missing or incorrect method used'})
         }
         // Check if user exists
@@ -108,7 +108,7 @@ export const accept = functions.https.onRequest(async(req, res) => {
         const decoded_token = await decodeToken(id_token)
 
         // Check if token's uid matches request body id
-        if (decoded_token.uid != req.body.id){
+        if (decoded_token.uid === undefined || decoded_token.uid != req.body.id){
             throw({status:401, message:'unauthorized'})
         }
         // Check if request is valid
@@ -165,7 +165,6 @@ export const accept = functions.https.onRequest(async(req, res) => {
 async function decodeToken(idToken) {
     try {
         const decodedToken = await admin.auth().verifyIdToken(idToken)
-        console.log('Token decoding: Success')
         return decodedToken
     }
     catch (err) {

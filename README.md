@@ -60,7 +60,6 @@ Send a **PUT** request to the URI for the invite function. The request body shou
 | -------------:|:--------:|:-------:| ----------- |
 | `id`          | required | string  | id of the user sending the invite |
 | `mobile`      | required | string  | mobile number for invitee |
-| `action`      | required | string  | should be set to "invite" |
 
 ##### Example Request 
 ```
