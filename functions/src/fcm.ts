@@ -1,6 +1,8 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin'
 
+const db = admin.firestore()
+
 async function notify_user(uid, notification_title, notification_body){
   // look for user device token in user_collection and send notification to each of the device
   const payload = {notification: {
@@ -51,7 +53,7 @@ export const task_delete_notify = functions.firestore.document('tasks/{task_id}'
   return true;
 });
 
-export const task_update_notify = functions.firestore.document('tasks/{task_id}').onUpdate((change, context) => {
+export const task_update_notify = functions.firestore.document('tasks/{task_id}').onUpdate(async(change, context) => {
   console.log("Detected Task Update!");
   const creator_uid = change.after.data().creator_id;
   const receiver_uid = change.after.data().receiver_id;
@@ -59,12 +61,13 @@ export const task_update_notify = functions.firestore.document('tasks/{task_id}'
   const original_task = change.before.data();
 
   try{
-    if (changed_task.done == true && original_task.done == false){
-      const oldBalance = admin.firestore.document(`users/${changed_task.receiver_id}`).get('balance');
-      const newBalance = oldBalance + changed_task.reward;
-      admin.firestore.document(`users/${changed_task.receiver_id}`).update({'balance': newBalance});
+    if (changed_task.done == true && original_task.done == false)
+    {
+      const user = await db.doc(`users/${receiver_uid}`).get(); 
+      var oldBalance = user.data().balance;
+      var newBalance = oldBalance + changed_task.reward; 
+      await db.doc(`users/${receiver_uid}`).update({'balance': newBalance}); 
     }
-    
     
     // implementation not optimal - task description
     if (changed_task.description != original_task.description){
