@@ -11,14 +11,14 @@ async function notify_user(uid, notification_title, notification_body){
     }};
 
   const device_collection = await admin.firestore().collection('user_collection').doc(uid).collection('device').get();
-  device_collection.forEach(document => {    
+  device_collection.forEach(async document => {    
     console.log("Send to device with token: ", document.data().token);
     if (process.env['GCLOUD_PROJECT'] == 'love-bank-testing'){
       console.log("Testing ENV - No real FCM sent out");
       return;
     }
     try{
-      admin.messaging().sendToDevice(document.data().token, payload);
+      await admin.messaging().sendToDevice(document.data().token, payload);
     }catch(e){
       console.log(e);
     }
@@ -35,12 +35,12 @@ export const task_create_notify = functions.firestore.document('tasks/{task_id}'
   const receiver_title = `You have a new task - ${change.data().title}`
   const notification_body = `Task Description: ${change.data().description}`;
 
-  notify_user(creator_uid, creator_title, notification_body);
-  notify_user(receiver_uid, receiver_title, notification_body);
+  await notify_user(creator_uid, creator_title, notification_body);
+  await notify_user(receiver_uid, receiver_title, notification_body);
   return true;
  });
 
-export const task_delete_notify = functions.firestore.document('tasks/{task_id}').onDelete((change, context) => {
+export const task_delete_notify = functions.firestore.document('tasks/{task_id}').onDelete(async (change, context) => {
   console.log("Detected Task Deletion!");
 
   const creator_uid = change.data().creator_id;
@@ -48,8 +48,8 @@ export const task_delete_notify = functions.firestore.document('tasks/{task_id}'
   const title = `Task Deleted - ${change.data().title}`;
   const notification_body = `Task Description: ${change.data().description}`;
 
-  notify_user(creator_uid, title, notification_body);
-  notify_user(receiver_uid, title, notification_body);
+  await notify_user(creator_uid, title, notification_body);
+  await notify_user(receiver_uid, title, notification_body);
   return true;
 });
 
@@ -75,8 +75,8 @@ export const task_update_notify = functions.firestore.document('tasks/{task_id}'
       const title = `Task Description Updated - ${changed_task.title}`;
       const notification_body = `New Description: ${changed_task.description}`;
 
-      notify_user(creator_uid, title, notification_body);
-      notify_user(receiver_uid, title, notification_body);
+      await notify_user(creator_uid, title, notification_body);
+      await notify_user(receiver_uid, title, notification_body);
     }
 
   }catch(e){
@@ -90,8 +90,8 @@ export const task_update_notify = functions.firestore.document('tasks/{task_id}'
       const title = `Task Reward Updated - ${changed_task.title}`;
       const notification_body = `Task Reward has changed ${original_task.reward} from to ${changed_task.reward}`;
 
-      notify_user(creator_uid, title, notification_body);
-      notify_user(receiver_uid, title, notification_body);
+      await notify_user(creator_uid, title, notification_body);
+      await notify_user(receiver_uid, title, notification_body);
     }
 
   }catch(e){
@@ -101,7 +101,7 @@ export const task_update_notify = functions.firestore.document('tasks/{task_id}'
 
 });
 
-export const user_update_notify = functions.firestore.document('users/{uid}').onUpdate((change, context) => {
+export const user_update_notify = functions.firestore.document('users/{uid}').onUpdate(async (change, context) => {
   console.log("Detected User Update!");
 
   const changed_user = change.after.data();
@@ -113,7 +113,7 @@ export const user_update_notify = functions.firestore.document('users/{uid}').on
     if (changed_user.balance != original_user.balance){
       const title = `LoveBank Balance Update`;
       const notification_body = `Your balance has changed ${original_user.balance} from to ${changed_user.balance}`;
-      notify_user(user_id, title, notification_body);
+      await notify_user(user_id, title, notification_body);
     }
   }catch(e){
     console.log(e);
