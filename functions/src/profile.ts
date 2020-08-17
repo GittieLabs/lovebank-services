@@ -35,7 +35,6 @@ export const profilePic = functions.https.onRequest(async(req, res) => {
             'profilePic': req.body.fileURL,
         })
 
-        console.log(req.body.fileURL)
         res.status(200).send(currentURL)
     }
     catch (err) {
