@@ -91,6 +91,6 @@ export function publish_email(title, content, email_address, source_email, reply
 
 
 //Using AWS Simple Email Service with created templates
-export function publish_email_templated(content, email_adress, source_email, reply_to_email){
+// export function publish_email_templated(content, email_adress, source_email, reply_to_email){
   
-}
+// }
