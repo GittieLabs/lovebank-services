@@ -48,11 +48,36 @@ This will start the functions emulator and deploy them locally. For HTTPS functi
 <br/><br/>
 
 ## Deploying Cloud Functions
-To be written...
-
-<br/><br/>
+To depoy cloud functions, run the following command within the 'functions/' directory:
+```
+firebase deploy --only functions
+```
 
 ## Using Cloud Functions
+Important Note: For all cloud functions, a bearer token must be added in the request header. From the frontend dart code, you can obtain this token like so:
+```
+var idToken = await user.getIdToken();
+var tokenString = idToken.token
+```
+Then, add the token string in the Authorization header, with the word "Bearer " in front of it. Here is an example of how the invite cloud function is called from the flutter project:
+```
+Future inviteBtnClicked(String userId, String mobile, token) async {
+  final response = await http.put(
+      'https://us-central1-love-bank-9a624.cloudfunctions.net/users-invite',
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $token'
+      },
+      body: jsonEncode(<String, String>{
+        'mobile': mobile,
+        'id': userId
+      }));
+  if (response.statusCode == 200) {
+    return true;
+  }
+  return false;
+}
+```
 ### Create Invite Codes (PUT)
 Send a **PUT** request to the URI for the invite function. The request body should be a JSON object with the following parameters:
 ##### Parameters
