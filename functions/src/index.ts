@@ -15,3 +15,5 @@ exports.aws = require('./aws');
 exports.twilio = require('./twilio');
 // Notification using FCM
 exports.fcm = require('./fcm');
+//Tasks - create/modify
+exports.tasks = require('./tasks');
