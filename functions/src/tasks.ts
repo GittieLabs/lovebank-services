@@ -25,11 +25,8 @@ export const task = functions.https.onRequest(async (req, res) => {
             throw({status:404, message:'User not found'})
         }
         // Check if user is already linked
-        if (user.data()?.partnerId){
-            // throw({status:400, message:'User already has partner and cannot create invite code'})
-        }
-        else{
-            throw({status:400, message:'User has no partner to create a task'})
+        if (!user.data()?.partnerId){
+            throw({status:400, message:'User already has partner and cannot create invite code'})
         }
         // Generate invite code and make sure there are no invites with the same code
         var taskID = (uuid4()).slice(0, 12)
