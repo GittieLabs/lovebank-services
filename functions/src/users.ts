@@ -165,7 +165,6 @@ export const accept = functions.https.onRequest(async(req, res) => {
     }
 })
 
-
 // Function to update fields in user document
 export const update = functions.https.onRequest(async (req, res) => {
     // User preference fields that can be changed (booleans)
