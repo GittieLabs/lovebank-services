@@ -68,30 +68,22 @@ export const revoke = functions.https.onRequest(async(req, res) => {
         const id_token = validateHeader(req)
         const decoded_token = await decodeToken(id_token)
 
-        // Check if token's uid matches request body id
-        if (decoded_token.uid === undefined || decoded_token.uid != req.body.id){
-            throw({status:401, message:'unauthorized'})
-        }
-
         // Check if request is valid
         if (req.method != 'PUT' || !req.body.id ){
             throw({status:400, message:'Request field may be missing or incorrect method used'})
         }
-
         // Check if token's uid matches request body id
         if (decoded_token.uid != req.body.id){
         throw({status:401, message:'unauthorized'})
         }
-
         // Check if invite exists in the database 
         const invite = db.collection('invites').doc(req.body.id)
         if (!invite) {
             throw({status:400, message:'No such invite exists in the database'})
         }
-
         // Delete invite document
         await invite.delete()
-
+        
         res.status(200).send()
     }
     catch (err) {
@@ -165,12 +157,50 @@ export const accept = functions.https.onRequest(async(req, res) => {
     }
 })
 
+// Unlink users
+export const unlink = functions.https.onRequest(async(req, res) => {
+    try {
+        // Parse and decode id token from Authorization header
+        const id_token = validateHeader(req)
+        const decoded_token = await decodeToken(id_token)
 
-// Function to update fields in user document
-export const user = functions.https.onRequest( async () => {
-    
+        // Check if token's uid matches request body id
+        if (decoded_token.uid === undefined || decoded_token.uid != req.body.id){
+            throw({status:401, message:'unauthorized'})
+        }
+
+        // Check if request is valid
+        if (req.method != 'PUT' || !req.body.id){
+            throw({status:400, message:'Request field may be missing or incorrect method used'})
+        }
+        // Check if user exist
+        const user_id = req.body.id
+        const user = await db.doc(`users/${user_id}`).get()
+        if (!user.exists) {
+            throw({status:404, message:'User not found'})
+        }
+        // Check if partner exists AND if they are paired with user
+        const partner_id = user.data().partnerId
+        const partner = await db.doc(`users/${partner_id}`).get()
+        if (partner.exists && partner.data().partnerId === user_id){
+            await db.doc(`users/${partner_id}`).update({'partnerId' : ""})
+        }
+        // Clear partnerId field
+        await db.doc(`users/${user_id}`).update({'partnerId' : ""})
+        const updated_user = await db.doc(`users/${user_id}`).get()
+
+        res.status(200).send(updated_user.data())
+    }
+    catch (err) {
+        var status = 500
+        var message = err
+        if (err.status && err.message){
+            status = err.status
+            message = err.message
+        }
+        res.status(status).send({"Error": message})
+    }
 })
-
 
 // Helper function to verify user auth token 
 async function decodeToken(idToken) {
