@@ -68,22 +68,30 @@ export const revoke = functions.https.onRequest(async(req, res) => {
         const id_token = validateHeader(req)
         const decoded_token = await decodeToken(id_token)
 
+        // Check if token's uid matches request body id
+        if (decoded_token.uid === undefined || decoded_token.uid != req.body.id){
+            throw({status:401, message:'unauthorized'})
+        }
+
         // Check if request is valid
         if (req.method != 'PUT' || !req.body.id ){
             throw({status:400, message:'Request field may be missing or incorrect method used'})
         }
+
         // Check if token's uid matches request body id
         if (decoded_token.uid != req.body.id){
         throw({status:401, message:'unauthorized'})
         }
+
         // Check if invite exists in the database 
         const invite = db.collection('invites').doc(req.body.id)
         if (!invite) {
             throw({status:400, message:'No such invite exists in the database'})
         }
+
         // Delete invite document
         await invite.delete()
-        
+
         res.status(200).send()
     }
     catch (err) {
@@ -157,50 +165,66 @@ export const accept = functions.https.onRequest(async(req, res) => {
     }
 })
 
-// Unlink users
-export const unlink = functions.https.onRequest(async(req, res) => {
+
+// Function to update fields in user document
+export const update = functions.https.onRequest(async (req, res) => {
+    // User preference fields that can be changed (booleans)
+    const mutable_boolean_fields = ['darkMode', 'task_acceptance_notifications', 'task_completion_notifications', 'task_reminder_notifications'];
+    // User profile fields that can be changed (strings)
+    const mutable_string_fields = ['email', 'displayName', 'mobile'];
     try {
         // Parse and decode id token from Authorization header
-        const id_token = validateHeader(req)
-        const decoded_token = await decodeToken(id_token)
-
+        const id_token = validateHeader(req);
+        const decoded_token = await decodeToken(id_token);
         // Check if token's uid matches request body id
-        if (decoded_token.uid === undefined || decoded_token.uid != req.body.id){
-            throw({status:401, message:'unauthorized'})
+        if (decoded_token.uid === undefined || decoded_token.uid != req.body.id) {
+            throw ({ status: 401, message: 'unauthorized' });
         }
-
         // Check if request is valid
-        if (req.method != 'PUT' || !req.body.id){
-            throw({status:400, message:'Request field may be missing or incorrect method used'})
+        if (req.method != 'PUT' || !req.body.id || !req.body.field || typeof req.body.value === 'undefined') {
+            throw ({ status: 400, message: 'Request field may be missing or incorrect method used' });
         }
-        // Check if user exist
-        const user_id = req.body.id
-        const user = await db.doc(`users/${user_id}`).get()
+        const field = req.body.field;
+        const value = req.body.value;
+        const userRef = db.doc(`users/${req.body.id}`);
+        // Check if user exists
+        const user = await userRef.get();
         if (!user.exists) {
-            throw({status:404, message:'User not found'})
+            throw ({ status: 404, message: 'User not found' });
         }
-        // Check if partner exists AND if they are paired with user
-        const partner_id = user.data().partnerId
-        const partner = await db.doc(`users/${partner_id}`).get()
-        if (partner.exists && partner.data().partnerId === user_id){
-            await db.doc(`users/${partner_id}`).update({'partnerId' : ""})
+        // Check if field is a user preference field (darkMode, notifications) and can be updated
+        if (mutable_boolean_fields.includes(field) && typeof value === 'boolean') {
+            await userRef.update({ [field]: value });
+            res.status(200).send({ "result": true });
         }
-        // Clear partnerId field
-        await db.doc(`users/${user_id}`).update({'partnerId' : ""})
-        const updated_user = await db.doc(`users/${user_id}`).get()
-
-        res.status(200).send(updated_user.data())
+        // Check if field is a profile field (display name, email, etc.) and can be updated
+        else if (mutable_string_fields.includes(field) && typeof value === 'string') {
+            await userRef.update({ [field]: value });
+            res.status(200).send({ "result": true });
+        }
+        // Check if all fields are to be changed
+        else if (field === 'all_notifications') {
+            await userRef.update({
+                'task_acceptance_notifications': value,
+                'task_completion_notifications': value,
+                'task_reminder_notifications': value
+            });
+        }
+        else {
+            throw ({ status: 400, message: 'Field does not exist or cannot be changed' });
+        }
     }
     catch (err) {
-        var status = 500
-        var message = err
-        if (err.status && err.message){
-            status = err.status
-            message = err.message
+        var status = 500;
+        var message = err;
+        if (err.status && err.message) {
+            status = err.status;
+            message = err.message;
         }
-        res.status(status).send({"Error": message})
+        res.status(status).send({ "Error": message });
     }
-})
+});
+
 
 // Helper function to verify user auth token 
 async function decodeToken(idToken) {
