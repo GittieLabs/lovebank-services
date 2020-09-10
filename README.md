@@ -54,7 +54,7 @@ firebase deploy --only functions
 ```
 
 ## Using Cloud Functions
-Important Note: For all cloud functions, a bearer token must be added in the request header. From the frontend dart code, you can obtain this token like so:
+Important Note: For all HTTPS cloud functions, a bearer token must be added in the request header. From the frontend dart code, you can obtain this token like so:
 ```
 var idToken = await user.getIdToken();
 var tokenString = idToken.token
