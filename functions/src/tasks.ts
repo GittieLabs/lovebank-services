@@ -26,7 +26,7 @@ export const create = functions.https.onRequest(async (req, res) => {
         }
         //check if user has a partner
         if (user.data().partnerId == ""){
-            throw({status:400, message:'User does not have a partner to send a task to'})
+            throw({status:400, message:'User is not connected to a partner'})
         }
         // Generate taskID and make sure there are no tasks with the same ID
         var taskID = (uuid4()).slice(0, 12)
@@ -48,7 +48,8 @@ export const create = functions.https.onRequest(async (req, res) => {
             'points': req.body.points,
             'creation_time': creationTime,
             'expiration_time': expirationTime,
-            'deleted':false
+            'deleted':false,
+            'completed':false
         })
         const task_doc = await db.doc(`tasks/${taskID}`).get()
 
@@ -135,7 +136,44 @@ export const accept = functions.https.onRequest(async (req, res) =>{
         res.status(status).send({"Error": message})
     }
 })
+// Mark a Task as completed - body should have taskID
+export const complete = functions.https.onRequest(async (req, res) =>{
+    try{
+        // Parse and decode id token from Authorization header
+        // const id_token = validateHeader(req)
+        // const decoded_token = await decodeToken(id_token)
 
+        // Check if token's uid matches request body id
+        // if (decoded_token.uid === undefined || decoded_token.uid != req.body.id){
+        //     throw({status:401, message:'unauthorized'})
+        // }
+        if (req.method != 'PUT' || !req.body.taskID){
+            throw({status:400, message:'Request field may be missing or incorrect method used'})
+        }
+        // Check if task exists in the database 
+        const task = db.collection('tasks').doc(req.body.taskID)
+        if (!task) {
+            throw({status:400, message:'No such task exists in the database'})
+        }
+
+        // accept task
+        await db.collection('tasks').doc(req.body.taskID).update({
+            'completed':true
+        })
+        const task_doc = await db.doc(`tasks/${req.body.taskID}`).get()
+
+        res.status(200).send(task_doc.data())
+    }
+    catch (err) {
+        var status = 500
+        var message = err
+        if (err.status && err.message){
+            status = err.status
+            message = err.message
+        }
+        res.status(status).send({"Error": message})
+    }
+})
 // Delete a Task - soft Delete -requires taskID in the body
 export const soft_delete = functions.https.onRequest(async (req, res) =>{
     try{
