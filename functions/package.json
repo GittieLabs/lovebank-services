@@ -15,7 +15,7 @@
   "main": "lib/index.js",
   "dependencies": {
     "@types/uuid": "^8.0.0",
-    "aws-sdk": "^2.714.2",
+    "aws-sdk": "^2.814.0",
     "chai": "^4.2.0",
     "dotenv": "^8.2.0",
     "firebase-admin": "^8.10.0",
